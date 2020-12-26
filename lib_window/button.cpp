@@ -1,6 +1,7 @@
 #include "button.h"
 
-Button::Button(sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size) {
+Button::Button(sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size)
+{
     this->handler = handler;
 
     this->background = sf::RectangleShape(size);
@@ -11,15 +12,17 @@ Button::Button(sf::Vector2f pos, sf::Vector2f size, std::string text, float text
     this->text.setFillColor(fg_color);
 
     sf::FloatRect text_bounds = this->text.getLocalBounds();
-    this->text.setPosition({pos.x + size.x / 2 - text_bounds.width / 2, pos.y + size.y / 2 - text_bounds.height * 0.8});
+    this->text.setPosition({pos.x + size.x / 2 - text_bounds.width / 2, pos.y + size.y / 2 - text_bounds.height * 0.8f});
 }
 
-void Button::render(Window* window) {
+void Button::render(Window *window)
+{
     window->draw(background);
     window->draw(text);
 }
 
-Button& Button::center() {
+Button &Button::center()
+{
     sf::Vector2f button_size = background.getSize();
 
     sf::Vector2f background_pos = background.getPosition();
