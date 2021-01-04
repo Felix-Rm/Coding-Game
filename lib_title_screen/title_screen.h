@@ -4,10 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include "../lib_window/window.h"
 #include "../lib_window/button.h"
+#include "../lib_window/style.h"
 
 class TitleScreen : public Window {
    private:
-    std::vector<Button> buttons;
+    std::vector<Button*> buttons;
     sf::Text framerate_display;
     sf::Clock clock;
 

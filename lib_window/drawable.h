@@ -3,9 +3,10 @@
 #include "window.h"
 
 class Drawable {
-   private:
+   protected:
     sf::Vector2f pos;
     sf::Vector2f size;
+    Window* window;
 
    public:
     Drawable(sf::Vector2f pos, sf::Vector2f size) {
