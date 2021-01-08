@@ -5,17 +5,17 @@ TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game"
 }
 
 void TitleScreen::setup() {
-    sf::Vector2f size = (sf::Vector2f)this->getSize();
+    sf::Vector2f size = (sf::Vector2f)this->getView().getSize();
 
     setView(sf::View(sf::FloatRect(0, 0, size.x, size.y)));
 
     framerate_display = sf::Text("0", game_font, 20);
     framerate_display.setPosition({0, 0});
 
-    std::string button_names[] = {"Campaign", "Sandbox", "Settings", "Exit"};
+    std::string button_names[] = {"Kampagne", "Sandbox", "Einstellungen", "Beenden"};
 
     Window::event_handler_t button_event_handlers[] = {
-        Window::createEventHandler(Window::noop, nullptr),
+        Window::createEventHandler(runCampaign, this),
         Window::createEventHandler(Window::noop, nullptr),
         Window::createEventHandler(Window::noop, nullptr),
         Window::createEventHandler([](sf::Event& event, void* data) {
@@ -25,7 +25,7 @@ void TitleScreen::setup() {
                                    this)};
 
     int button_names_length = sizeof(button_names) / sizeof(button_names[0]);
-    sf::Vector2f button_size = {650, 100};
+    sf::Vector2f button_size = {850, 120};
     int button_text_size = 90;
     int button_outline_thickness = 4;
     int button_vertical_spacing = 50;
@@ -65,4 +65,19 @@ bool TitleScreen::run() {
     display();
 
     return isOpen();
+}
+
+bool TitleScreen::runCampaign(sf::Event& event, void* data) {
+    TitleScreen* obj = (TitleScreen*)data;
+
+    LevelScreen level_screen{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+
+    obj->setVisible(false);
+
+    while (level_screen.run())
+        ;
+
+    obj->setVisible(true);
+
+    return true;
 }

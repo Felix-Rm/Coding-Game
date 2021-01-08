@@ -2,8 +2,6 @@
 
 #include "drawable.h"
 
-extern sf::Font game_font;
-
 class Button : public Drawable {
    private:
     Window::event_handler_t handler;

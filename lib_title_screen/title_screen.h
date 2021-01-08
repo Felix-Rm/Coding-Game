@@ -6,6 +6,8 @@
 #include "../lib_window/button.h"
 #include "../lib_window/style.h"
 
+#include "../lib_level_screen/level_screen.h"
+
 class TitleScreen : public Window {
    private:
     std::vector<Button*> buttons;
@@ -19,4 +21,6 @@ class TitleScreen : public Window {
 
     void setup() override;
     bool run() override;
+
+    static bool runCampaign(sf::Event& event, void* data);
 };

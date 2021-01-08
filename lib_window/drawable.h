@@ -2,6 +2,8 @@
 
 #include "window.h"
 
+extern sf::Font game_font;
+
 class Drawable {
    protected:
     sf::Vector2f pos;

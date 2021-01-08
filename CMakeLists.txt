@@ -12,7 +12,10 @@ add_subdirectory(lib_window)
 link_directories(${PROJECT_SOURCE_DIR}/lib_title_screen)
 add_subdirectory(lib_title_screen)
 
+link_directories(${PROJECT_SOURCE_DIR}/lib_level_screen)
+add_subdirectory(lib_level_screen)
+
 add_executable (game main.cpp)
 
-target_link_libraries(game window title_screen)
+target_link_libraries(game window title_screen level_screen)
 target_link_libraries (game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
