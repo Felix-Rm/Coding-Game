@@ -10,5 +10,7 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 game
+get_latest.sh
+push_latest.sh
 build/**
 .vscode/**
