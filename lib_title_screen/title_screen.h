@@ -16,11 +16,11 @@ class TitleScreen : public Window {
 
     float framerate = 0;
 
-   public:
-    TitleScreen();
-
     void setup() override;
-    bool run() override;
+    void render() override;
 
     static bool runCampaign(sf::Event& event, void* data);
+
+   public:
+    TitleScreen();
 };
