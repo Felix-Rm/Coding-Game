@@ -13,11 +13,13 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style) :
 }
 
 void LevelScreen::calculateStagePositions() {
+    constrainScroll();
+
     int bottom_stage_id = (y_scroll / stage_size.y) - 1;
     int top_stage_id = ((y_scroll + view_size.y) / stage_size.y) + 1;
     int stage_scroll_offset = view_size.y - stage_size.y + (y_scroll);
 
-    // printf("bot_id: %d; top_id: %d; offset: %d\n", bottom_stage_id, top_stage_id, stage_scroll_offset);
+    printf("bot_id: %d; top_id: %d; offset: %d\n", bottom_stage_id, top_stage_id, stage_scroll_offset);
 
     if (bottom_stage_id < 0) bottom_stage_id = 0;
     if (bottom_stage_id >= num_stages) bottom_stage_id = num_stages - 1;
@@ -46,13 +48,18 @@ bool LevelScreen::onMouseScroll(sf::Event& event, void* data) {
     LevelScreen* obj = (LevelScreen*)data;
 
     obj->y_scroll += event.mouseWheelScroll.delta * 30;
-    int max_scroll = (obj->num_stages - 1) * obj->stage_size.y - (obj->view_size.y - obj->stage_size.y);
 
-    if (obj->y_scroll < 0) obj->y_scroll = 0;
-    if (obj->y_scroll > max_scroll) obj->y_scroll = max_scroll;
+    obj->constrainScroll();
 
     obj->calculateStagePositions();
     return true;
+}
+
+void LevelScreen::constrainScroll() {
+    int max_scroll = (this->num_stages - 1) * this->stage_size.y - (this->view_size.y - this->stage_size.y);
+
+    if (this->y_scroll < 0) this->y_scroll = 0;
+    if (this->y_scroll > max_scroll) this->y_scroll = max_scroll;
 }
 
 void LevelScreen::setup() {
@@ -62,7 +69,7 @@ void LevelScreen::setup() {
     setView(sf::View(sf::FloatRect(0, 0, window_size.x, window_size.y)));
 
     this->stage_scaling = this->view_size.x / this->original_stage_size.x;
-    this->stage_size = {(unsigned int)(this->original_stage_size.x * this->stage_scaling), (unsigned int)(this->original_stage_size.y * this->stage_scaling)};
+    this->stage_size = {(int)(this->original_stage_size.x * this->stage_scaling), (int)(this->original_stage_size.y * this->stage_scaling)};
 
     for (int i = 0; i < stage_loaded.size(); i++) {
         if (stage_loaded[i]) {

@@ -14,7 +14,7 @@
 
 class LevelScreen : public Window {
    private:
-    sf::Vector2u stage_size, original_stage_size;
+    sf::Vector2i stage_size, original_stage_size;
     float stage_scaling = 1;
 
     std::unordered_map<int, Stage*> stages;
@@ -26,6 +26,7 @@ class LevelScreen : public Window {
     int y_scroll = 0;
 
     void calculateStagePositions();
+    void constrainScroll();
 
     void setup() override;
     void render() override;
