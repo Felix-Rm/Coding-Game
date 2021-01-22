@@ -1,10 +1,12 @@
 #include "title_screen.h"
 
-TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game", sf::Style::Default) {
+TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game", sf::Style::Default)
+{
     setup();
 }
 
-void TitleScreen::setup() {
+void TitleScreen::setup()
+{
     framerate_display = sf::Text("0", game_font, 20);
     framerate_display.setPosition({0, 0});
 
@@ -14,8 +16,8 @@ void TitleScreen::setup() {
         Window::createEventHandler(runCampaign, this),
         Window::createEventHandler(Window::noop, nullptr),
         Window::createEventHandler(Window::noop, nullptr),
-        Window::createEventHandler([](sf::Event& event, void* data) {
-            ((Window*)data)->close();
+        Window::createEventHandler([](sf::Event &event, void *data) {
+            ((Window *)data)->close();
             return true;
         },
                                    this)};
@@ -32,13 +34,16 @@ void TitleScreen::setup() {
         for (int i = 0; i < button_names_length; i++)
             buttons.push_back(nullptr);
 
-    for (int i = 0; i < button_names_length; i++) {
-        if (buttons[i] != nullptr) delete buttons[i];
+    for (int i = 0; i < button_names_length; i++)
+    {
+        if (buttons[i] != nullptr)
+            delete buttons[i];
         buttons[i] = new Button(this, {this->view_size.x / 2 - button_size.x / 2, vertical_start + i * (button_size.y + button_vertical_spacing)}, button_size, button_names[i], button_text_size, button_outline_thickness, game_colors::LIGHT_GRAY, game_colors::ORANGE, button_event_handlers[i]);
     }
 }
 
-void TitleScreen::render() {
+void TitleScreen::render()
+{
     // Clear screen
     clear(game_colors::GRAY);
 
@@ -51,15 +56,17 @@ void TitleScreen::render() {
 
     draw(framerate_display);
 
-    for (int i = 0; i < buttons.size(); i++) {
+    for (int i = 0; i < buttons.size(); i++)
+    {
         buttons[i]->render(this);
     }
 }
 
-bool TitleScreen::runCampaign(sf::Event& event, void* data) {
-    TitleScreen* obj = (TitleScreen*)data;
+bool TitleScreen::runCampaign(sf::Event &event, void *data)
+{
+    TitleScreen *obj = (TitleScreen *)data;
 
-    LevelScreen level_screen{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+    StageScreen level_screen{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
 
     obj->setVisible(false);
 

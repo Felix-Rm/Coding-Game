@@ -1,38 +1,35 @@
 #pragma once
 
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
+#include <string>
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
 
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include "../lib_window/window.h"
 #include "../lib_window/button.h"
 #include "../lib_window/style.h"
 
-#include "stage.h"
+#include "tile.h"
 
-class LevelScreen : public Window {
-   private:
-    sf::Vector2i stage_size, original_stage_size;
-    float stage_scaling = 1;
+class LevelScreen : public Window
+{
+private:
+    enum tile_types
+    {
+        AIR,
+        FLOOR,
+        WALL
+    };
 
-    std::unordered_map<int, Stage*> stages;
-    std::vector<bool> stage_loaded;
+    std::string path;
+    sf::Vector2u size;
 
-    int num_stages = 0;
-    int stage_cursor = 0;
-
-    int y_scroll = 0;
-
-    void calculateStagePositions();
-    void constrainScroll();
+    std::vector<std::vector<Tile *>> map;
 
     void setup() override;
     void render() override;
 
-    static bool onMouseScroll(sf::Event& event, void* data);
-
-   public:
-    LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style);
+public:
+    LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path);
 };

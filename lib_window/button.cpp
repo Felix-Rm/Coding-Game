@@ -1,6 +1,7 @@
 #include "button.h"
 
-Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size) {
+Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size)
+{
     this->bg_color = bg_color;
     this->window = window;
     this->handler = handler;
@@ -13,6 +14,7 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
 
     this->text = sf::Text(text, game_font, text_size);
     this->text.setFillColor(fg_color);
+    this->text.setStyle(sf::Text::Bold);
 
     sf::FloatRect text_bounds = this->text.getLocalBounds();
     this->text.setPosition({pos.x - text_bounds.left + size.x / 2 - text_bounds.width / 2, pos.y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
@@ -21,16 +23,19 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
     window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
 }
 
-Button::~Button() {
+Button::~Button()
+{
     this->window->removeEventHandler(onMouseMove, this);
 }
 
-void Button::render(Window *window) {
+void Button::render(Window *window)
+{
     window->draw(background);
     window->draw(text);
 }
 
-Button &Button::center() {
+Button &Button::center()
+{
     sf::Vector2f button_size = background.getSize();
 
     sf::Vector2f background_pos = background.getPosition();
@@ -42,7 +47,8 @@ Button &Button::center() {
     return *this;
 }
 
-bool Button::onMouseMove(sf::Event &event, void *_obj) {
+bool Button::onMouseMove(sf::Event &event, void *_obj)
+{
     Button *obj = (Button *)_obj;
 
     auto &mouseX = event.mouseMove.x;
@@ -50,14 +56,16 @@ bool Button::onMouseMove(sf::Event &event, void *_obj) {
 
     float hightlighting_factor = 0.5;
 
-    if (obj->background.getGlobalBounds().contains(mouseX, mouseY) && !obj->highlighted) {
+    if (obj->background.getGlobalBounds().contains(mouseX, mouseY) && !obj->highlighted)
+    {
         obj->highlighted = true;
         obj->background.setFillColor(obj->background.getOutlineColor());
 
         return true;
     }
 
-    if (!obj->background.getGlobalBounds().contains(mouseX, mouseY) && obj->highlighted) {
+    if (!obj->background.getGlobalBounds().contains(mouseX, mouseY) && obj->highlighted)
+    {
         obj->highlighted = false;
         obj->background.setFillColor(obj->bg_color);
     }
@@ -65,17 +73,33 @@ bool Button::onMouseMove(sf::Event &event, void *_obj) {
     return false;
 }
 
-bool Button::onMousePress(sf::Event &event, void *_obj) {
+bool Button::onMousePress(sf::Event &event, void *_obj)
+{
     Button *obj = (Button *)_obj;
 
     auto &mouseX = event.mouseButton.x;
     auto &mouseY = event.mouseButton.y;
 
-    if (obj->background.getGlobalBounds().contains(mouseX, mouseY)) {
+    if (obj->background.getGlobalBounds().contains(mouseX, mouseY))
+    {
         obj->handler.ptr(event, obj->handler.data);
 
         return true;
     }
 
     return false;
+}
+
+void Button::setPosition(int x, int y)
+{
+    this->background.setPosition(x, y);
+
+    sf::FloatRect text_bounds = this->text.getLocalBounds();
+    this->text.setPosition({x - text_bounds.left + size.x / 2 - text_bounds.width / 2, y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
+}
+
+void Button::shiftPosition(int dx, int dy)
+{
+    this->background.move(dx, dy);
+    this->text.move(dx, dy);
 }

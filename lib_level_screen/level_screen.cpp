@@ -1,92 +1,52 @@
 #include "level_screen.h"
 
-LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style) : Window(v, title, style) {
-    std::ifstream stage_info("assets/stages.info");
-    stage_info >> this->num_stages >> this->original_stage_size.x >> this->original_stage_size.y;
-    stage_info.close();
+LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(v, title, style)
+{
+    this->path = path + std::to_string(level_num) + '/';
 
-    for (int i = 0; i < num_stages; i++) stage_loaded.push_back(false);
+    std::ifstream level_info(this->path + "level.info");
+    level_info >> this->size.x >> this->size.y;
 
-    setup();
+    for (int y = 0; y < this->size.y; y++)
+    {
+        this->map.push_back(std::vector<Tile *>());
+        auto current_row = &this->map.back();
 
-    addEventHandler(onMouseScroll, this, 1, sf::Event::EventType::MouseWheelScrolled);
-}
+        for (int x = 0; x < this->size.x; x++)
+        {
+            int type;
+            level_info >> type;
 
-void LevelScreen::calculateStagePositions() {
-    constrainScroll();
+            switch (type)
+            {
+            case tile_types::AIR:
+                current_row->push_back(new Tile(false, tile_types::AIR));
+                break;
+            case tile_types::FLOOR:
+                current_row->push_back(new Tile(true, tile_types::FLOOR));
+                break;
+            case tile_types::WALL:
+                current_row->push_back(new Tile(false, tile_types::WALL));
+                break;
 
-    int bottom_stage_id = (y_scroll / stage_size.y) - 1;
-    int top_stage_id = ((y_scroll + view_size.y) / stage_size.y) + 1;
-    int stage_scroll_offset = view_size.y - stage_size.y + (y_scroll);
-
-    printf("bot_id: %d; top_id: %d; offset: %d\n", bottom_stage_id, top_stage_id, stage_scroll_offset);
-
-    if (bottom_stage_id < 0) bottom_stage_id = 0;
-    if (bottom_stage_id >= num_stages) bottom_stage_id = num_stages - 1;
-    if (top_stage_id < 0) top_stage_id = 0;
-    if (top_stage_id >= num_stages) top_stage_id = num_stages - 1;
-
-    for (int i = 0; i < stage_loaded.size(); i++) {
-        if (stage_loaded[i] && (i < bottom_stage_id || i > top_stage_id)) {
-            delete stages[i];
-            stage_loaded[i] = false;
-        }
-
-        if (!stage_loaded[i] && i >= bottom_stage_id && i <= top_stage_id) {
-            stages[i] = new Stage(this, i, this->stage_scaling);
-            stage_loaded[i] = true;
-        }
-
-        if (stage_loaded[i]) {
-            stages[i]->setYOffset(stage_scroll_offset);
-            stage_scroll_offset -= stage_size.y;
-        }
-    }
-}
-
-bool LevelScreen::onMouseScroll(sf::Event& event, void* data) {
-    LevelScreen* obj = (LevelScreen*)data;
-
-    obj->y_scroll += event.mouseWheelScroll.delta * 30;
-
-    obj->constrainScroll();
-
-    obj->calculateStagePositions();
-    return true;
-}
-
-void LevelScreen::constrainScroll() {
-    int max_scroll = (this->num_stages - 1) * this->stage_size.y - (this->view_size.y - this->stage_size.y);
-
-    if (this->y_scroll < 0) this->y_scroll = 0;
-    if (this->y_scroll > max_scroll) this->y_scroll = max_scroll;
-}
-
-void LevelScreen::setup() {
-    this->view_size = (sf::Vector2f)this->getView().getSize();
-
-    sf::Vector2f window_size = (sf::Vector2f)this->getSize();
-    setView(sf::View(sf::FloatRect(0, 0, window_size.x, window_size.y)));
-
-    this->stage_scaling = this->view_size.x / this->original_stage_size.x;
-    this->stage_size = {(int)(this->original_stage_size.x * this->stage_scaling), (int)(this->original_stage_size.y * this->stage_scaling)};
-
-    for (int i = 0; i < stage_loaded.size(); i++) {
-        if (stage_loaded[i]) {
-            stage_loaded[i] = false;
-            delete stages[i];
+            default:
+                printf("unknown tile type\n");
+                break;
+            }
         }
     }
 
-    calculateStagePositions();
+    level_info.close();
 }
 
-void LevelScreen::render() {
-    // Clear screen
-    clear(game_colors::GRAY);
+void LevelScreen::render()
+{
+    for (int y = 0; y < this->size.y; y++)
+    {
 
-    for (int i = 0; i < stage_loaded.size(); i++) {
-        if (stage_loaded[i])
-            stages[i]->render(this);
+        for (int x = 0; x < this->size.x; x++)
+        {
+            map[y][x]->render(this);
+        }
     }
 }

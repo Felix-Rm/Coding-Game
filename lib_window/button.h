@@ -2,8 +2,9 @@
 
 #include "drawable.h"
 
-class Button : public Drawable {
-   private:
+class Button : public Drawable
+{
+private:
     Window::event_handler_t handler;
 
     sf::RectangleShape background;
@@ -12,14 +13,16 @@ class Button : public Drawable {
     bool highlighted = false;
     sf::Color bg_color;
 
-   public:
-    Button(Window* window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
+public:
+    Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
     ~Button();
 
-    Button& center();
+    Button &center();
 
-    void render(Window* window) override;
+    void render(Window *window) override;
+    void setPosition(int x, int y) override;
+    void shiftPosition(int dx, int dy) override;
 
-    static bool onMouseMove(sf::Event& event, void*);
-    static bool onMousePress(sf::Event& event, void*);
+    static bool onMouseMove(sf::Event &event, void *);
+    static bool onMousePress(sf::Event &event, void *);
 };

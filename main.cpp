@@ -8,11 +8,12 @@
 
 sf::Font game_font = sf::Font();
 
-int main() {
-    game_font.loadFromFile("assets/neuropol x rg.ttf");
+int main()
+{
+    game_font.loadFromFile("assets/font3.ttf");
 
-    //TitleScreen window{};
-    LevelScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+    TitleScreen window{};
+    //LevelScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
 
     while (window.run())
         ;

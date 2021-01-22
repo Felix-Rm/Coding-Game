@@ -25,7 +25,8 @@ public:
 
     void render(Window *window) override;
 
-    void setYOffset(int offset);
+    void setPosition(int x, int y) override;
+    void shiftPosition(int dx, int dy) override{};
 
     static bool onMouseMove(sf::Event &event, void *);
     static bool onMousePress(sf::Event &event, void *);
