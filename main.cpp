@@ -12,8 +12,15 @@ int main()
 {
     game_font.loadFromFile("assets/font3.ttf");
 
-    TitleScreen window{};
-    //LevelScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+    //TitleScreen window{};
+    //StageScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+
+    std::string level_path = "assets/stages/0/";
+    LevelScreen window{
+        sf::VideoMode::getDesktopMode(),
+        "Level #",
+        sf::Style::Default,
+        0, level_path};
 
     while (window.run())
         ;

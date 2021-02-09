@@ -15,13 +15,6 @@
 class LevelScreen : public Window
 {
 private:
-    enum tile_types
-    {
-        AIR,
-        FLOOR,
-        WALL
-    };
-
     std::string path;
     sf::Vector2u size;
 

@@ -3,6 +3,9 @@
 StageScreen::StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style) : Window(v, title, style)
 {
     std::ifstream stage_info("assets/stages.info");
+    if (!stage_info)
+        throw std::runtime_error("could not open stage info");
+
     stage_info >> this->num_stages >> this->original_stage_size.x >> this->original_stage_size.y;
     stage_info.close();
 
