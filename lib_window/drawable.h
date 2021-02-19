@@ -18,8 +18,8 @@ public:
         this->size = size;
     }
 
-    virtual void setPosition(int x, int y) = 0;
-    virtual void shiftPosition(int dx, int dy) = 0;
+    virtual void setPosition(float x, float y) = 0;
+    virtual void shiftPosition(float dx, float dy) = 0;
 
     virtual void render(Window *window) = 0;
 };

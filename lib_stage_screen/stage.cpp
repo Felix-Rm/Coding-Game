@@ -56,11 +56,13 @@ Stage::~Stage()
     printf("stage %p deleted\n", this);
 };
 
-void Stage::setPosition(int x, int y)
+void Stage::setPosition(float x, float y)
 {
-    sf::Vector2f delta = this->background.getPosition();
+    sf::Vector2f delta = this->pos;
     delta.x -= x;
     delta.y -= y;
+
+    this->pos = {x, y};
 
     this->background.setPosition(x, y);
 

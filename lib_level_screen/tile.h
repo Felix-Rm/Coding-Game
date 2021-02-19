@@ -17,7 +17,6 @@ class Tile : public Drawable
 private:
     static bool textures_loaded;
     static sf::Texture textures[tile_types::_COUNT];
-    static sf::Vector2f tex_size;
 
     const static std::string path;
 
@@ -26,8 +25,11 @@ private:
 public:
     Tile(bool is_drivable, int tex_id, sf::Vector2f pos);
 
-    void setPosition(int x, int y) override;
-    void shiftPosition(int dx, int dy) override;
+    static sf::Vector2f tex_size;
+
+    void setPosition(float x, float y) override;
+    void shiftPosition(float dx, float dy) override;
+    void setScale(float s);
 
     void render(Window *window) override;
 

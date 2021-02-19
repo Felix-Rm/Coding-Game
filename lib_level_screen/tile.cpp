@@ -5,9 +5,7 @@ sf::Vector2f Tile::tex_size = {0, 0};
 bool Tile::textures_loaded = false;
 sf::Texture Tile::textures[tile_types::_COUNT];
 
-Tile::Tile(bool is_drivable, int tex_id, sf::Vector2f pos) : Drawable({pos.x * tex_size.x,
-                                                                       pos.y * tex_size.y},
-                                                                      tex_size)
+Tile::Tile(bool is_drivable, int tex_id, sf::Vector2f pos) : Drawable({pos.x, pos.y}, tex_size)
 {
     if (!textures_loaded)
         throw std::runtime_error("Textures have to be loaded before Tile can be constructed!");
@@ -32,8 +30,24 @@ void Tile::loadTextures()
     textures_loaded = true;
 }
 
-void Tile::setPosition(int x, int y){};
-void Tile::shiftPosition(int dx, int dy){};
+void Tile::setPosition(float x, float y)
+{
+    this->pos = {x, y};
+    this->background.setPosition(this->pos);
+};
+
+void Tile::shiftPosition(float dx, float dy)
+{
+    this->pos.x += dx;
+    this->pos.y += dy;
+
+    this->background.setPosition(this->pos);
+};
+
+void Tile::setScale(float s)
+{
+    this->background.setScale(s, s);
+}
 
 void Tile::render(Window *window)
 {

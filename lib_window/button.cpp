@@ -90,16 +90,19 @@ bool Button::onMousePress(sf::Event &event, void *_obj)
     return false;
 }
 
-void Button::setPosition(int x, int y)
+void Button::setPosition(float x, float y)
 {
-    this->background.setPosition(x, y);
+    this->pos = {x, y};
+    this->background.setPosition(this->pos);
 
     sf::FloatRect text_bounds = this->text.getLocalBounds();
     this->text.setPosition({x - text_bounds.left + size.x / 2 - text_bounds.width / 2, y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
 }
 
-void Button::shiftPosition(int dx, int dy)
+void Button::shiftPosition(float dx, float dy)
 {
+    this->pos.x += dx;
+    this->pos.y += dy;
     this->background.move(dx, dy);
     this->text.move(dx, dy);
 }

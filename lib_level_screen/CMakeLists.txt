@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 2.8)
 
-add_library(level_screen "level_screen.cpp" "tile.cpp")
+add_library(level_screen "level_screen.cpp" "tile.cpp" "bot.cpp")
 target_link_libraries(level_screen window)

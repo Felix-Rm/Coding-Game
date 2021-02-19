@@ -20,8 +20,8 @@ public:
     Button &center();
 
     void render(Window *window) override;
-    void setPosition(int x, int y) override;
-    void shiftPosition(int dx, int dy) override;
+    void setPosition(float x, float y) override;
+    void shiftPosition(float dx, float dy) override;
 
     static bool onMouseMove(sf::Event &event, void *);
     static bool onMousePress(sf::Event &event, void *);
