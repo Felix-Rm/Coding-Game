@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdarg>
 
+#include "../lib_helpers/helpers.h"
+
 class Window : public sf::RenderWindow
 {
 public:

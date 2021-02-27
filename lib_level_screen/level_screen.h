@@ -13,9 +13,11 @@
 #include "tile.h"
 #include "bot.h"
 
+class Bot;
+
 class LevelScreen : public Window
 {
-private:
+protected:
     std::string path;
     sf::Vector2u size;
     int num_bots = 0;
@@ -31,6 +33,9 @@ private:
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
 
+    sf::Texture top_bar_tex;
+    sf::Sprite top_bar;
+
     void setup() override;
     void render() override;
 
@@ -42,4 +47,6 @@ private:
 
 public:
     LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path);
+
+    friend Bot;
 };

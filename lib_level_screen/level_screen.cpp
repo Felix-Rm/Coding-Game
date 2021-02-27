@@ -2,6 +2,14 @@
 
 LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(v, title, style)
 {
+    Tile::loadTextures();
+    Bot::loadTextures();
+
+    this->top_bar_tex.loadFromFile("assets/textures/miscellaneous/top_bar.png");
+    this->top_bar.setTexture(this->top_bar_tex);
+
+    this->top_bar.setPosition((this->view_size.x - this->top_bar.getGlobalBounds().width) / 2, 0);
+
     this->path = path + std::to_string(level_num) + '/';
 
     std::ifstream level_info(this->path + "level.info");
@@ -10,8 +18,12 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, i
 
     level_info >> this->size.x >> this->size.y;
 
-    Tile::loadTextures();
-    Bot::loadTextures();
+    int level_height = this->size.y * Tile::tex_size.y;
+    int level_width = this->size.x * Tile::tex_size.x;
+
+    this->scale = min(this->view_size.x / level_width, this->view_size.y / level_height);
+    this->origin.x = (this->view_size.x - (level_width * this->scale)) / 2;
+    this->origin.y = (this->view_size.y - (level_height * this->scale)) / 2;
 
     for (int y = 0; y < this->size.y; y++)
     {
@@ -49,14 +61,37 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, i
     {
         int x, y;
         level_info >> x >> y;
-        bots.push_back(new Bot({(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {x, y}, level_info));
+        bots.push_back(new Bot({(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
     }
+
+    updatePosition();
 
     addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
     addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
 
     level_info.close();
+
+    addEventHandler([](sf::Event &event, void *data) {
+        LevelScreen *obj = (LevelScreen *)data;
+
+        sf::Keyboard::Key key = event.key.code;
+
+        if (key == sf::Keyboard::D)
+            obj->bots[0]->rotate(Bot::option::clockwise);
+
+        if (key == sf::Keyboard::A)
+            obj->bots[0]->rotate(Bot::option::counterclockwise);
+
+        if (key == sf::Keyboard::W)
+            obj->bots[0]->drive(Bot::option::forward);
+
+        if (key == sf::Keyboard::S)
+            obj->bots[0]->drive(Bot::option::backward);
+
+        return true;
+    },
+                    this, 1, sf::Event::KeyPressed);
 }
 
 void LevelScreen::setup() {}
@@ -74,7 +109,12 @@ void LevelScreen::render()
     }
 
     for (int i = 0; i < num_bots; i++)
+        bots[i]->update();
+
+    for (int i = 0; i < num_bots; i++)
         bots[i]->render(this);
+
+    draw(top_bar);
 }
 
 void LevelScreen::updatePosition()
@@ -91,8 +131,7 @@ void LevelScreen::updatePosition()
 
     for (int i = 0; i < num_bots; i++)
     {
-        bots[i]->setScale(this->scale);
-        bots[i]->setPosition(this->origin.x + bots[i]->tile_position.x * (Tile::tex_size.x * this->scale), this->origin.y + bots[i]->tile_position.y * (Tile::tex_size.y * this->scale));
+        bots[i]->updatePosition();
     }
 }
 
