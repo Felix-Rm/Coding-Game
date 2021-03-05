@@ -5,10 +5,7 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, i
     Tile::loadTextures();
     Bot::loadTextures();
 
-    this->top_bar_tex.loadFromFile("assets/textures/miscellaneous/top_bar.png");
-    this->top_bar.setTexture(this->top_bar_tex);
-
-    this->top_bar.setPosition((this->view_size.x - this->top_bar.getGlobalBounds().width) / 2, 0);
+    this->top_bar = new TopBar(this);
 
     this->path = path + std::to_string(level_num) + '/';
 
@@ -114,7 +111,7 @@ void LevelScreen::render()
     for (int i = 0; i < num_bots; i++)
         bots[i]->render(this);
 
-    draw(top_bar);
+    top_bar->render(this);
 }
 
 void LevelScreen::updatePosition()

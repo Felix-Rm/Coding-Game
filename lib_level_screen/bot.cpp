@@ -63,11 +63,10 @@ void Bot::render(Window *window)
 
 void Bot::update()
 {
-    movement_complete = true;
+    if (movement_complete == MOVING)
+        movement_complete = JUST_DONE;
 
     float_mod(target_rotation, 360);
-
-    float current_rotation = this->body.getRotation();
 
     if (abs(current_rotation - target_rotation) > delta_rotation_per_update)
     {
@@ -86,41 +85,44 @@ void Bot::update()
 
         current_rotation += chosen_dir > 0 ? delta_rotation_per_update : -delta_rotation_per_update;
 
-        movement_complete = false;
+        movement_complete = MOVING;
     }
 
     float delta_x = target_position.x - tile_position.x;
     if (abs(delta_x) > delta_tile_position_per_update.x / 2)
     {
         tile_position.x += delta_x > 0 ? delta_tile_position_per_update.x : -delta_tile_position_per_update.x;
-        movement_complete = false;
+        movement_complete = MOVING;
     }
 
     float delta_y = target_position.y - tile_position.y;
     if (abs(delta_y) > delta_tile_position_per_update.y / 2)
     {
         tile_position.y += delta_y > 0 ? delta_tile_position_per_update.y : -delta_tile_position_per_update.y;
-        movement_complete = false;
+        movement_complete = MOVING;
     }
 
-    if (!movement_complete)
+    if (movement_complete == MOVING)
     {
         updatePosition();
         this->body.setRotation(current_rotation);
     }
 
-    if (movement_complete)
+    if (movement_complete == JUST_DONE)
     {
-        this->body.setRotation(target_rotation);
+        current_rotation = target_rotation;
 
         tile_position.x = target_position.x;
         tile_position.y = target_position.y;
+
+        level->top_bar->update();
+        movement_complete = DONE;
     }
 }
 
 bool Bot::rotate(option dir)
 {
-    if (!movement_complete)
+    if (movement_complete != DONE)
         return false;
 
     if (dir == clockwise)
@@ -128,13 +130,14 @@ bool Bot::rotate(option dir)
     if (dir == counterclockwise)
         target_rotation -= 45;
 
-    movement_complete = false;
+    movement_complete = MOVING;
+    level->elapsed_time += 0.5;
     return true;
 }
 
 bool Bot::drive(option dir)
 {
-    if (!movement_complete)
+    if (movement_complete != DONE)
         return false;
 
     sf::Vector2i delta_pos;
@@ -178,7 +181,8 @@ bool Bot::drive(option dir)
         target_position.y -= delta_pos.y;
     }
 
-    movement_complete = false;
+    movement_complete = MOVING;
+    level->elapsed_time += (int)current_rotation % 90 == 0 ? 1 : 1.5;
     return true;
 }
 

@@ -13,6 +13,14 @@ class LevelScreen;
 class Bot : public Drawable
 {
 private:
+    enum movement_state
+    {
+
+        DONE,
+        MOVING,
+        JUST_DONE
+    };
+
     static std::string path;
     static bool textures_loaded;
 
@@ -29,8 +37,11 @@ private:
 
     sf::Sprite body;
 
-    bool movement_complete = true;
+    movement_state movement_complete = DONE;
+
     sf::Vector2f tile_position;
+    float current_rotation = 0;
+
     LevelScreen *level;
 
     void applyOffset();

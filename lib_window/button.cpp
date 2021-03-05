@@ -37,12 +37,13 @@ void Button::render(Window *window)
 Button &Button::center()
 {
     sf::Vector2f button_size = background.getSize();
+    pos.x -= button_size.x / 2;
+    pos.y -= button_size.y / 2;
 
     sf::Vector2f background_pos = background.getPosition();
-    background.setPosition({background_pos.x - button_size.x / 2, background_pos.y - button_size.y / 2});
+    background.setPosition(pos);
 
-    sf::Vector2f text_pos = text.getPosition();
-    text.setPosition({text_pos.x - button_size.x / 2, text_pos.y - button_size.y / 2});
+    text.move({-button_size.x / 2, -button_size.y / 2});
 
     return *this;
 }

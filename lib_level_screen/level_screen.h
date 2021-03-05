@@ -10,10 +10,12 @@
 #include "../lib_window/button.h"
 #include "../lib_window/style.h"
 
+#include "top_bar.h"
 #include "tile.h"
 #include "bot.h"
 
 class Bot;
+class TopBar;
 
 class LevelScreen : public Window
 {
@@ -33,8 +35,9 @@ protected:
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
 
-    sf::Texture top_bar_tex;
-    sf::Sprite top_bar;
+    float elapsed_time = 0;
+
+    TopBar *top_bar;
 
     void setup() override;
     void render() override;
@@ -49,4 +52,5 @@ public:
     LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path);
 
     friend Bot;
+    friend TopBar;
 };

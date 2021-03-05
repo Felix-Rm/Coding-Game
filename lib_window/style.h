@@ -18,4 +18,5 @@ namespace game_colors
     const sf::Color SILVER = {161, 161, 161};
     const sf::Color GOLD = {255, 200, 0};
     const sf::Color BLACK = {0, 0, 0};
+    const sf::Color WHITE = {255, 255, 255};
 } // namespace game_colors
