@@ -1,16 +1,12 @@
 #include "title_screen.h"
 
-TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game", sf::Style::Default)
-{
+TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game", sf::Style::Default) {
     setup();
 }
 
-void TitleScreen::setup()
-{
-    framerate_display = sf::Text("0", game_font, 20);
-    framerate_display.setPosition({0, 0});
-
-    std::string button_names[] = {"Kampagne", "Sandbox", "Einstellungen", "Beenden"};
+void TitleScreen::setup() {
+    std::string button_names[] = {"Kampagne"};
+    //, "Sandbox", "Einstellungen", "Beenden"};
 
     Window::event_handler_t button_event_handlers[] = {
         Window::createEventHandler(runCampaign, this),
@@ -30,40 +26,24 @@ void TitleScreen::setup()
 
     int vertical_start = this->view_size.y / 2 - (button_size.y * button_names_length + button_vertical_spacing * (button_names_length - 1)) / 2;
 
-    if (buttons.size() == 0)
-        for (int i = 0; i < button_names_length; i++)
-            buttons.push_back(nullptr);
+    buttons.clear();
 
-    for (int i = 0; i < button_names_length; i++)
-    {
-        if (buttons[i] != nullptr)
-            delete buttons[i];
-        buttons[i] = new Button(this, {this->view_size.x / 2 - button_size.x / 2, vertical_start + i * (button_size.y + button_vertical_spacing)}, button_size, button_names[i], button_text_size, button_outline_thickness, game_colors::LIGHT_GRAY, game_colors::ORANGE, button_event_handlers[i]);
+    for (int i = 0; i < button_names_length; i++) {
+        sf::Vector2f pos = {this->view_size.x / 2 - button_size.x / 2, vertical_start + i * (button_size.y + button_vertical_spacing)};
+        buttons.push_back(Button(this, pos, button_size, button_names[i], button_text_size, button_outline_thickness, GameStyle::LIGHT_GRAY, GameStyle::ORANGE, button_event_handlers[i]));
     }
 }
 
-void TitleScreen::render()
-{
+void TitleScreen::render() {
     // Clear screen
-    clear(game_colors::GRAY);
+    clear(GameStyle::GRAY);
 
-    framerate = (framerate * 10 + 1.f / clock.getElapsedTime().asSeconds()) / 11;
-    clock.restart();
-
-    char framerate_text[15];
-    sprintf(framerate_text, "%06.2f", framerate);
-    framerate_display.setString(framerate_text);
-
-    draw(framerate_display);
-
-    for (int i = 0; i < buttons.size(); i++)
-    {
-        buttons[i]->render(this);
+    for (int i = 0; i < buttons.size(); i++) {
+        buttons[i].render(this);
     }
 }
 
-bool TitleScreen::runCampaign(sf::Event &event, void *data)
-{
+bool TitleScreen::runCampaign(sf::Event &event, void *data) {
     TitleScreen *obj = (TitleScreen *)data;
 
     StageScreen level_screen{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};

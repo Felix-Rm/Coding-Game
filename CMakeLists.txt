@@ -6,6 +6,8 @@ set(EXECUTABLE_OUTPUT_PATH ../)
 
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
+include_directories(${PROJECT_SOURCE_DIR})
+
 link_directories(${PROJECT_SOURCE_DIR}/lib_helpers)
 add_subdirectory(lib_helpers)
 

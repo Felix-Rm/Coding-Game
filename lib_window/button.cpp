@@ -1,7 +1,6 @@
 #include "button.h"
 
-Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size)
-{
+Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size) {
     this->bg_color = bg_color;
     this->window = window;
     this->handler = handler;
@@ -12,7 +11,7 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
     this->background.setOutlineThickness(outline_thickness);
     this->background.setOutlineColor({(sf::Uint8)(bg_color.r * 0.5), (sf::Uint8)(bg_color.g * 0.5), (sf::Uint8)(bg_color.b * 0.5)});
 
-    this->text = sf::Text(text, game_font, text_size);
+    this->text = sf::Text(text, GameStyle::game_font, text_size);
     this->text.setFillColor(fg_color);
     this->text.setStyle(sf::Text::Bold);
 
@@ -21,21 +20,22 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
 
     window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
+
+    printf("construct %p\n", this);
 }
 
-Button::~Button()
-{
+Button::~Button() {
     this->window->removeEventHandler(onMouseMove, this);
+    this->window->removeEventHandler(onMousePress, this);
+    printf("destruct  %p\n", this);
 }
 
-void Button::render(Window *window)
-{
+void Button::render(Window *window) {
     window->draw(background);
     window->draw(text);
 }
 
-Button &Button::center()
-{
+Button &Button::center() {
     sf::Vector2f button_size = background.getSize();
     pos.x -= button_size.x / 2;
     pos.y -= button_size.y / 2;
@@ -48,8 +48,7 @@ Button &Button::center()
     return *this;
 }
 
-bool Button::onMouseMove(sf::Event &event, void *_obj)
-{
+bool Button::onMouseMove(sf::Event &event, void *_obj) {
     Button *obj = (Button *)_obj;
 
     auto &mouseX = event.mouseMove.x;
@@ -57,16 +56,14 @@ bool Button::onMouseMove(sf::Event &event, void *_obj)
 
     float hightlighting_factor = 0.5;
 
-    if (obj->background.getGlobalBounds().contains(mouseX, mouseY) && !obj->highlighted)
-    {
+    if (obj->background.getGlobalBounds().contains(mouseX, mouseY) && !obj->highlighted) {
         obj->highlighted = true;
         obj->background.setFillColor(obj->background.getOutlineColor());
 
         return true;
     }
 
-    if (!obj->background.getGlobalBounds().contains(mouseX, mouseY) && obj->highlighted)
-    {
+    if (!obj->background.getGlobalBounds().contains(mouseX, mouseY) && obj->highlighted) {
         obj->highlighted = false;
         obj->background.setFillColor(obj->bg_color);
     }
@@ -74,15 +71,13 @@ bool Button::onMouseMove(sf::Event &event, void *_obj)
     return false;
 }
 
-bool Button::onMousePress(sf::Event &event, void *_obj)
-{
+bool Button::onMousePress(sf::Event &event, void *_obj) {
     Button *obj = (Button *)_obj;
 
     auto &mouseX = event.mouseButton.x;
     auto &mouseY = event.mouseButton.y;
 
-    if (obj->background.getGlobalBounds().contains(mouseX, mouseY))
-    {
+    if (obj->background.getGlobalBounds().contains(mouseX, mouseY)) {
         obj->handler.ptr(event, obj->handler.data);
 
         return true;
@@ -91,8 +86,7 @@ bool Button::onMousePress(sf::Event &event, void *_obj)
     return false;
 }
 
-void Button::setPosition(float x, float y)
-{
+void Button::setPosition(float x, float y) {
     this->pos = {x, y};
     this->background.setPosition(this->pos);
 
@@ -100,8 +94,7 @@ void Button::setPosition(float x, float y)
     this->text.setPosition({x - text_bounds.left + size.x / 2 - text_bounds.width / 2, y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
 }
 
-void Button::shiftPosition(float dx, float dy)
-{
+void Button::shiftPosition(float dx, float dy) {
     this->pos.x += dx;
     this->pos.y += dy;
     this->background.move(dx, dy);

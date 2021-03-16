@@ -1,7 +1,6 @@
 #include "stage.h"
 
-Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (sf::Vector2f)window->getSize())
-{
+Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (sf::Vector2f)window->getSize()) {
     this->path = "assets/stages/" + std::to_string(stage_number) + '/';
 
     printf("%s\n", this->path.c_str());
@@ -29,8 +28,7 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
     int button_text_size = button_height * 0.6;
     int button_outline_size = button_width * 0.05;
 
-    for (int i = 0; i < num_buttons; i++)
-    {
+    for (int i = 0; i < num_buttons; i++) {
         int col_num = i % num_columns;
         int row_num = i / num_columns;
 
@@ -40,7 +38,7 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
         char title[5];
         sprintf(title, "%dx%02x", stage_number, i);
 
-        Button *b = new Button(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, game_colors::BLACK, game_colors::RED, Window::createEventHandler(Window::noop, nullptr));
+        Button *b = new Button(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(Window::noop, nullptr));
         level_buttons.push_back(b);
 
         printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
@@ -48,16 +46,14 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
 }
 
 // Stage::Stage() : Drawable({0, 0}, {0, 0}){};
-Stage::~Stage()
-{
+Stage::~Stage() {
     for (int i = 0; i < this->level_buttons.size(); i++)
         delete this->level_buttons[i];
 
     printf("stage %p deleted\n", this);
 };
 
-void Stage::setPosition(float x, float y)
-{
+void Stage::setPosition(float x, float y) {
     sf::Vector2f delta = this->pos;
     delta.x -= x;
     delta.y -= y;
@@ -70,8 +66,7 @@ void Stage::setPosition(float x, float y)
         level_buttons[i]->shiftPosition(-delta.x, -delta.y);
 }
 
-void Stage::render(Window *window)
-{
+void Stage::render(Window *window) {
     window->draw(this->background);
 
     for (int i = 0; i < this->level_buttons.size(); i++)

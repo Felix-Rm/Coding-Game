@@ -4,17 +4,16 @@
 #include <iostream>
 #include <fstream>
 
-#include "../lib_window/drawable.h"
+#include "lib_helpers/helpers.h"
+#include "lib_window/drawable.h"
 #include "tile.h"
 #include "level_screen.h"
 
 class LevelScreen;
 
-class Bot : public Drawable
-{
-private:
-    enum movement_state
-    {
+class Bot : public Drawable {
+   private:
+    enum movement_state {
 
         DONE,
         MOVING,
@@ -46,9 +45,8 @@ private:
 
     void applyOffset();
 
-public:
-    enum option
-    {
+   public:
+    enum option {
         clockwise,
         counterclockwise,
         forward,

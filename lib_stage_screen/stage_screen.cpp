@@ -1,7 +1,6 @@
 #include "stage_screen.h"
 
-StageScreen::StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style) : Window(v, title, style)
-{
+StageScreen::StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style) : Window(v, title, style) {
     std::ifstream stage_info("assets/stages.info");
     if (!stage_info)
         throw std::runtime_error("could not open stage info");
@@ -17,8 +16,7 @@ StageScreen::StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style) :
     addEventHandler(onMouseScroll, this, 1, sf::Event::EventType::MouseWheelScrolled);
 }
 
-void StageScreen::calculateStagePositions()
-{
+void StageScreen::calculateStagePositions() {
     constrainScroll();
 
     int bottom_stage_id = (y_scroll / stage_size.y) - 1;
@@ -36,30 +34,25 @@ void StageScreen::calculateStagePositions()
     if (top_stage_id >= num_stages)
         top_stage_id = num_stages - 1;
 
-    for (int i = 0; i < stage_loaded.size(); i++)
-    {
-        if (stage_loaded[i] && (i < bottom_stage_id || i > top_stage_id))
-        {
+    for (int i = 0; i < stage_loaded.size(); i++) {
+        if (stage_loaded[i] && (i < bottom_stage_id || i > top_stage_id)) {
             delete stages[i];
             stage_loaded[i] = false;
         }
 
-        if (!stage_loaded[i] && i >= bottom_stage_id && i <= top_stage_id)
-        {
+        if (!stage_loaded[i] && i >= bottom_stage_id && i <= top_stage_id) {
             stages[i] = new Stage(this, i, this->stage_scaling);
             stage_loaded[i] = true;
         }
 
-        if (stage_loaded[i])
-        {
+        if (stage_loaded[i]) {
             stages[i]->setPosition(0, stage_scroll_offset);
             stage_scroll_offset -= stage_size.y;
         }
     }
 }
 
-bool StageScreen::onMouseScroll(sf::Event &event, void *data)
-{
+bool StageScreen::onMouseScroll(sf::Event &event, void *data) {
     StageScreen *obj = (StageScreen *)data;
 
     obj->y_scroll += event.mouseWheelScroll.delta * 30;
@@ -70,8 +63,7 @@ bool StageScreen::onMouseScroll(sf::Event &event, void *data)
     return true;
 }
 
-void StageScreen::constrainScroll()
-{
+void StageScreen::constrainScroll() {
     int max_scroll = (this->num_stages - 1) * this->stage_size.y - (this->view_size.y - this->stage_size.y);
 
     if (this->y_scroll < 0)
@@ -80,8 +72,7 @@ void StageScreen::constrainScroll()
         this->y_scroll = max_scroll;
 }
 
-void StageScreen::setup()
-{
+void StageScreen::setup() {
     this->view_size = (sf::Vector2f)this->getView().getSize();
 
     sf::Vector2f window_size = (sf::Vector2f)this->getSize();
@@ -90,10 +81,8 @@ void StageScreen::setup()
     this->stage_scaling = this->view_size.x / this->original_stage_size.x;
     this->stage_size = {(int)(this->original_stage_size.x * this->stage_scaling), (int)(this->original_stage_size.y * this->stage_scaling)};
 
-    for (int i = 0; i < stage_loaded.size(); i++)
-    {
-        if (stage_loaded[i])
-        {
+    for (int i = 0; i < stage_loaded.size(); i++) {
+        if (stage_loaded[i]) {
             stage_loaded[i] = false;
             delete stages[i];
         }
@@ -102,13 +91,11 @@ void StageScreen::setup()
     calculateStagePositions();
 }
 
-void StageScreen::render()
-{
+void StageScreen::render() {
     // Clear screen
-    clear(game_colors::GRAY);
+    clear(GameStyle::GRAY);
 
-    for (int i = 0; i < stage_loaded.size(); i++)
-    {
+    for (int i = 0; i < stage_loaded.size(); i++) {
         if (stage_loaded[i])
             stages[i]->render(this);
     }

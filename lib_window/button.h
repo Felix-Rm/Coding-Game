@@ -2,9 +2,8 @@
 
 #include "drawable.h"
 
-class Button : public Drawable
-{
-private:
+class Button : public Drawable {
+   private:
     Window::event_handler_t handler;
 
     sf::RectangleShape background;
@@ -13,8 +12,10 @@ private:
     bool highlighted = false;
     sf::Color bg_color;
 
-public:
+   public:
+    Button() : Drawable({0, 0}, {0, 0}) {}
     Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
+
     ~Button();
 
     Button &center();

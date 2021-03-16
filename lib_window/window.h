@@ -5,11 +5,11 @@
 #include <vector>
 #include <cstdarg>
 
-#include "../lib_helpers/helpers.h"
+#include "lib_helpers/helpers.h"
+#include "style.h"
 
-class Window : public sf::RenderWindow
-{
-public:
+class Window : public sf::RenderWindow {
+   public:
     typedef struct
     {
         bool (*ptr)(sf::Event &, void *);
@@ -28,7 +28,9 @@ public:
 
     static bool noop(sf::Event &, void *) { return true; };
 
-protected:
+    float framerate = 0;
+
+   protected:
     std::vector<event_handler_t> event_handlers;
 
     sf::Vector2f view_size;
@@ -37,4 +39,8 @@ protected:
     virtual void setup() = 0;
 
     void checkEvents();
+
+   private:
+    sf::Text framerate_display;
+    sf::Clock clock;
 };
