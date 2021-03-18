@@ -34,6 +34,7 @@ class LevelScreen : public Window {
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
 
+    
     float elapsed_time = 0;
 
     TopBar *top_bar;

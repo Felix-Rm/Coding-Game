@@ -80,14 +80,14 @@ bool Window::run() {
 
     render();
 
-    float elapsed = clock.getElapsedTime().asSeconds();
-    if (elapsed > 0) {
-        framerate = (framerate * 10 + 1.f / elapsed) / 11;
+    mspf = clock.getElapsedTime().asMilliseconds();
+    if (mspf > 0) {
+        fps = (fps * 10 + 1.f / (mspf / 1000)) / 11;
         clock.restart();
     }
 
     char framerate_text[15];
-    snprintf(framerate_text, sizeof(framerate_text), "%06.2f", framerate);
+    snprintf(framerate_text, sizeof(framerate_text), "%06.2f", fps);
     framerate_display.setString(framerate_text);
 
     draw(framerate_display);

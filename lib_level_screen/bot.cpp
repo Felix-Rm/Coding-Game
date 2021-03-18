@@ -55,65 +55,73 @@ void Bot::render() {
 }
 
 void Bot::update() {
-    if (movement_complete == MOVING)
-        movement_complete = JUST_DONE;
-
-    if (abs(current_rotation - target_rotation) > delta_rotation_per_update) {
-        float_mod(target_rotation, 360);
-        float_mod(current_rotation, 360);
-
-        float dir1 = target_rotation - current_rotation;
-        float dir2 = (target_rotation + 360) - current_rotation;
-        float dir3 = -(current_rotation + 360) + target_rotation;
-
-        float chosen_dir = 0;
-        if (abs(dir1) < abs(dir2) && abs(dir1) < abs(dir3)) {
-            chosen_dir = dir1;
-            //printf("#1: ");
-        } else if (abs(dir2) < abs(dir3)) {
-            chosen_dir = dir2;
-            //printf("#2: ");
-        } else {
-            chosen_dir = dir3;
-            //printf("#3: ");
-        }
-
-        //printf("current: %f target: %f move: %f\n", current_rotation, target_rotation, chosen_dir);
-        current_rotation += chosen_dir > 0 ? delta_rotation_per_update : -delta_rotation_per_update;
-
-        movement_complete = MOVING;
-    }
-
-    float delta_x = target_position.x - tile_position.x;
-    if (abs(delta_x) > delta_tile_position_per_update.x / 2) {
-        tile_position.x += delta_x > 0 ? delta_tile_position_per_update.x : -delta_tile_position_per_update.x;
-        movement_complete = MOVING;
-    }
-
-    float delta_y = target_position.y - tile_position.y;
-    if (abs(delta_y) > delta_tile_position_per_update.y / 2) {
-        tile_position.y += delta_y > 0 ? delta_tile_position_per_update.y : -delta_tile_position_per_update.y;
-        movement_complete = MOVING;
-    }
+    int repeats = window->mspf / time_for_movement * updates_per_movement;
 
     if (movement_complete == MOVING) {
-        updatePosition();
-        this->body.setRotation(current_rotation);
+        t += repeats;
     }
 
-    if (movement_complete == JUST_DONE) {
-        current_rotation = target_rotation;
+    for (int i = 0; i < repeats && movement_complete != DONE; i++) {
+        if (movement_complete == MOVING)
+            movement_complete = JUST_DONE;
 
-        tile_position.x = target_position.x;
-        tile_position.y = target_position.y;
+        if (abs(current_rotation - target_rotation) > delta_rotation_per_update) {
+            float_mod(target_rotation, 360);
+            float_mod(current_rotation, 360);
 
-        current_rotation = target_rotation;
+            float dir1 = target_rotation - current_rotation;
+            float dir2 = (target_rotation + 360) - current_rotation;
+            float dir3 = -(current_rotation + 360) + target_rotation;
 
-        updatePosition();
-        this->body.setRotation(current_rotation);
+            float chosen_dir = 0;
+            if (abs(dir1) < abs(dir2) && abs(dir1) < abs(dir3)) {
+                chosen_dir = dir1;
+                //printf("#1: ");
+            } else if (abs(dir2) < abs(dir3)) {
+                chosen_dir = dir2;
+                //printf("#2: ");
+            } else {
+                chosen_dir = dir3;
+                //printf("#3: ");
+            }
 
-        level->top_bar->update();
-        movement_complete = DONE;
+            //printf("current: %f target: %f move: %f\n", current_rotation, target_rotation, chosen_dir);
+            current_rotation += chosen_dir > 0 ? delta_rotation_per_update : -delta_rotation_per_update;
+
+            movement_complete = MOVING;
+        }
+
+        float delta_x = target_position.x - tile_position.x;
+        if (abs(delta_x) > delta_tile_position_per_update.x / 2) {
+            tile_position.x += delta_x > 0 ? delta_tile_position_per_update.x : -delta_tile_position_per_update.x;
+            movement_complete = MOVING;
+        }
+
+        float delta_y = target_position.y - tile_position.y;
+        if (abs(delta_y) > delta_tile_position_per_update.y / 2) {
+            tile_position.y += delta_y > 0 ? delta_tile_position_per_update.y : -delta_tile_position_per_update.y;
+            movement_complete = MOVING;
+        }
+
+        if (movement_complete == MOVING) {
+            updatePosition();
+            this->body.setRotation(current_rotation);
+        }
+
+        if (movement_complete == JUST_DONE) {
+            current_rotation = target_rotation;
+
+            tile_position.x = target_position.x;
+            tile_position.y = target_position.y;
+
+            current_rotation = target_rotation;
+
+            updatePosition();
+            this->body.setRotation(current_rotation);
+
+            level->top_bar->update();
+            movement_complete = DONE;
+        }
     }
 }
 
@@ -127,7 +135,10 @@ bool Bot::rotate(option dir) {
         target_rotation -= 45;
 
     movement_complete = MOVING;
+
+    time_for_movement = 0.5 * movement_multiplyer;
     level->elapsed_time += 0.5;
+
     return true;
 }
 
@@ -184,7 +195,11 @@ bool Bot::drive(option dir) {
     }
 
     movement_complete = MOVING;
-    level->elapsed_time += (int)current_rotation % 90 == 0 ? 1 : 1.5;
+
+    float length = (int)current_rotation % 90 == 0 ? 1 : 1.5;
+    time_for_movement = length * movement_multiplyer;
+    level->elapsed_time += length;
+
     return true;
 }
 

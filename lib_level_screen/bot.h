@@ -20,13 +20,15 @@ class Bot : public Drawable {
         JUST_DONE
     };
 
+    static constexpr long movement_multiplyer = 1000;
+
     static std::string path;
     static bool textures_loaded;
 
     static constexpr int num_textures = 1;
     static sf::Texture textures[num_textures];
 
-    static constexpr int updates_per_movement = 100;
+    static constexpr int updates_per_movement = 1000;
 
     static constexpr float delta_rotation_per_update = 45.0 / updates_per_movement;
     static sf::Vector2f delta_tile_position_per_update;
@@ -37,6 +39,9 @@ class Bot : public Drawable {
     sf::Sprite body;
 
     movement_state movement_complete = DONE;
+    long time_for_movement;
+
+    long t = 0;
 
     sf::Vector2f tile_position;
     float current_rotation = 0;

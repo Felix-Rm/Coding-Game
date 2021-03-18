@@ -31,7 +31,8 @@ class Window : public sf::RenderWindow {
 
     static bool noop(sf::Event &, void *) { return true; };
 
-    float framerate = 0;
+    float fps = 0;
+    float mspf = 0;
 
    protected:
     sf::Uint32 style;
