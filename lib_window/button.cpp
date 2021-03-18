@@ -1,6 +1,6 @@
 #include "button.h"
 
-Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(pos, size) {
+Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(window, pos, size) {
     this->bg_color = bg_color;
     this->window = window;
     this->handler = handler;
@@ -18,8 +18,8 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
     sf::FloatRect text_bounds = this->text.getLocalBounds();
     this->text.setPosition({pos.x - text_bounds.left + size.x / 2 - text_bounds.width / 2, pos.y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
 
-    window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
-    window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
+    this->window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
+    this->window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
 
     printf("construct %p\n", this);
 }
@@ -30,9 +30,9 @@ Button::~Button() {
     printf("destruct  %p\n", this);
 }
 
-void Button::render(Window *window) {
-    window->draw(background);
-    window->draw(text);
+void Button::render() {
+    this->window->draw(background);
+    this->window->draw(text);
 }
 
 Button &Button::center() {
@@ -40,7 +40,6 @@ Button &Button::center() {
     pos.x -= button_size.x / 2;
     pos.y -= button_size.y / 2;
 
-    sf::Vector2f background_pos = background.getPosition();
     background.setPosition(pos);
 
     text.move({-button_size.x / 2, -button_size.y / 2});
@@ -53,8 +52,6 @@ bool Button::onMouseMove(sf::Event &event, void *_obj) {
 
     auto &mouseX = event.mouseMove.x;
     auto &mouseY = event.mouseMove.y;
-
-    float hightlighting_factor = 0.5;
 
     if (obj->background.getGlobalBounds().contains(mouseX, mouseY) && !obj->highlighted) {
         obj->highlighted = true;

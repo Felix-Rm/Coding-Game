@@ -17,9 +17,8 @@
 class Bot;
 class TopBar;
 
-class LevelScreen : public Window
-{
-protected:
+class LevelScreen : public Window {
+   protected:
     std::string path;
     sf::Vector2u size;
     int num_bots = 0;
@@ -48,8 +47,8 @@ protected:
     static bool onMouseButton(sf::Event &, void *);
     static bool onScroll(sf::Event &, void *);
 
-public:
-    LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path);
+   public:
+    LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path);
 
     friend Bot;
     friend TopBar;

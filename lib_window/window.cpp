@@ -1,6 +1,9 @@
 #include "window.h"
 
-Window::Window(sf::VideoMode v, std::string title, sf::Uint32 style) : RenderWindow(v, title, style) {
+Window::Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : RenderWindow(video_mode, title, style) {
+    this->style = style;
+    this->video_mode = video_mode;
+
     this->view_size = (sf::Vector2f)this->getView().getSize();
 
     framerate_display = sf::Text("0", GameStyle::game_font, 20);
@@ -49,10 +52,10 @@ void Window::addEventHandler(bool (*ptr)(sf::Event &, void *), void *data, int n
 }
 
 void Window::removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data) {
-    for (auto it = event_handlers.begin(); it < event_handlers.end(); it++) {
-        if (it->ptr == ptr && it->data == data) {
-            event_handlers.erase(it);
-            break;
+    for (size_t i = 0; i < event_handlers.size(); i++) {
+        if (event_handlers[i].ptr == ptr && event_handlers[i].data == data) {
+            event_handlers.erase(event_handlers.begin() + i);
+            return;
         }
     }
 }
@@ -63,7 +66,7 @@ void Window::checkEvents() {
         sf::Uint32 mask = 1 << event.type;
         //printf("%d\n", event.type);
 
-        for (int i = 0; i < event_handlers.size(); i++) {
+        for (size_t i = 0; i < event_handlers.size(); i++) {
             if (event_handlers[i].react_mask & mask)
                 if (event_handlers[i].ptr(event, event_handlers[i].data))
                     break;
@@ -77,11 +80,14 @@ bool Window::run() {
 
     render();
 
-    framerate = (framerate * 10 + 1.f / clock.getElapsedTime().asSeconds()) / 11;
-    clock.restart();
+    float elapsed = clock.getElapsedTime().asSeconds();
+    if (elapsed > 0) {
+        framerate = (framerate * 10 + 1.f / elapsed) / 11;
+        clock.restart();
+    }
 
     char framerate_text[15];
-    sprintf(framerate_text, "%06.2f", framerate);
+    snprintf(framerate_text, sizeof(framerate_text), "%06.2f", framerate);
     framerate_display.setString(framerate_text);
 
     draw(framerate_display);

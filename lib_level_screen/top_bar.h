@@ -31,5 +31,5 @@ class TopBar : public Drawable {
 
     void update();
 
-    void render(Window *window) override;
+    void render() override;
 };

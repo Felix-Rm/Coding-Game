@@ -6,15 +6,14 @@
 #include <fstream>
 #include <unordered_map>
 
-#include "../lib_window/window.h"
-#include "../lib_window/button.h"
-#include "../lib_window/style.h"
+#include "lib_window/window.h"
+#include "lib_window/button.h"
+#include "lib_window/style.h"
 
 #include "stage.h"
 
-class StageScreen : public Window
-{
-private:
+class StageScreen : public Window {
+   private:
     sf::Vector2i stage_size, original_stage_size;
     float stage_scaling = 1;
 
@@ -34,6 +33,6 @@ private:
 
     static bool onMouseScroll(sf::Event &event, void *data);
 
-public:
-    StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style);
+   public:
+    StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 };

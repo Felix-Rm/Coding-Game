@@ -1,6 +1,6 @@
 #include "stage.h"
 
-Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (sf::Vector2f)window->getSize()) {
+Stage::Stage(Window *window, int stage_number, float scale) : Drawable(window, {0, 0}, (sf::Vector2f)window->getSize()) {
     this->path = "assets/stages/" + std::to_string(stage_number) + '/';
 
     printf("%s\n", this->path.c_str());
@@ -28,6 +28,9 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
     int button_text_size = button_height * 0.6;
     int button_outline_size = button_width * 0.05;
 
+    level_executor_info.reserve(num_buttons);
+    level_buttons.reserve(num_buttons);
+
     for (int i = 0; i < num_buttons; i++) {
         int col_num = i % num_columns;
         int row_num = i / num_columns;
@@ -36,10 +39,10 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
         float y = -button_height / 2.0 + stage_size.height / 2.0 - button_spacing_y * ((num_rows / 2.0) - row_num - 0.5);
 
         char title[5];
-        sprintf(title, "%dx%02x", stage_number, i);
+        snprintf(title, sizeof(title), "%dx%02x", stage_number, i);
 
-        Button *b = new Button(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(Window::noop, nullptr));
-        level_buttons.push_back(b);
+        level_executor_info.push_back({this, i});
+        level_buttons.push_back(Button(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(Stage::run_level, &(level_executor_info[i]))));
 
         printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }
@@ -47,11 +50,21 @@ Stage::Stage(Window *window, int stage_number, float scale) : Drawable({0, 0}, (
 
 // Stage::Stage() : Drawable({0, 0}, {0, 0}){};
 Stage::~Stage() {
-    for (int i = 0; i < this->level_buttons.size(); i++)
-        delete this->level_buttons[i];
-
     printf("stage %p deleted\n", this);
 };
+
+bool Stage::run_level(sf::Event &event, void *data) {
+    auto *info = (std::pair<Stage *, int> *)data;
+
+    LevelScreen window{info->first->window->getVideoMode(), "Level " + std::to_string(info->second), info->first->window->getStyle(), info->second, info->first->path};
+
+    info->first->window->setVisible(false);
+    while (window.run())
+        ;
+
+    info->first->window->setVisible(true);
+    return true;
+}
 
 void Stage::setPosition(float x, float y) {
     sf::Vector2f delta = this->pos;
@@ -63,12 +76,12 @@ void Stage::setPosition(float x, float y) {
     this->background.setPosition(x, y);
 
     for (int i = 0; i < num_buttons; i++)
-        level_buttons[i]->shiftPosition(-delta.x, -delta.y);
+        level_buttons[i].shiftPosition(-delta.x, -delta.y);
 }
 
-void Stage::render(Window *window) {
-    window->draw(this->background);
+void Stage::render() {
+    this->window->draw(this->background);
 
-    for (int i = 0; i < this->level_buttons.size(); i++)
-        this->level_buttons[i]->render(window);
+    for (size_t i = 0; i < this->level_buttons.size(); i++)
+        this->level_buttons[i].render();
 }

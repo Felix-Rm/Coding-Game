@@ -5,7 +5,7 @@ bool Bot::textures_loaded = false;
 sf::Texture Bot::textures[Bot::num_textures];
 sf::Vector2f Bot::delta_tile_position_per_update = {1.0 / Bot::updates_per_movement, 1.0 / Bot::updates_per_movement};
 
-Bot::Bot(sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream &data, LevelScreen *lvl) : Drawable(pos, Tile::tex_size) {
+Bot::Bot(Window *window, sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream &data, LevelScreen *lvl) : Drawable(window, pos, Tile::tex_size) {
     if (!textures_loaded)
         throw std::runtime_error("Textures have to be loaded before Bot can be constructed!");
 
@@ -50,8 +50,8 @@ void Bot::setScale(float s) {
     this->body.setScale(s, s);
 }
 
-void Bot::render(Window *window) {
-    window->draw(this->body);
+void Bot::render() {
+    this->window->draw(this->body);
 }
 
 void Bot::update() {

@@ -1,6 +1,6 @@
 #include "stage_screen.h"
 
-StageScreen::StageScreen(sf::VideoMode v, std::string title, sf::Uint32 style) : Window(v, title, style) {
+StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : Window(video_mode, title, style) {
     std::ifstream stage_info("assets/stages.info");
     if (!stage_info)
         throw std::runtime_error("could not open stage info");
@@ -34,13 +34,13 @@ void StageScreen::calculateStagePositions() {
     if (top_stage_id >= num_stages)
         top_stage_id = num_stages - 1;
 
-    for (int i = 0; i < stage_loaded.size(); i++) {
-        if (stage_loaded[i] && (i < bottom_stage_id || i > top_stage_id)) {
+    for (size_t i = 0; i < stage_loaded.size(); i++) {
+        if (stage_loaded[i] && ((int)i < bottom_stage_id || (int)i > top_stage_id)) {
             delete stages[i];
             stage_loaded[i] = false;
         }
 
-        if (!stage_loaded[i] && i >= bottom_stage_id && i <= top_stage_id) {
+        if (!stage_loaded[i] && (int)i >= bottom_stage_id && (int)i <= top_stage_id) {
             stages[i] = new Stage(this, i, this->stage_scaling);
             stage_loaded[i] = true;
         }
@@ -81,7 +81,7 @@ void StageScreen::setup() {
     this->stage_scaling = this->view_size.x / this->original_stage_size.x;
     this->stage_size = {(int)(this->original_stage_size.x * this->stage_scaling), (int)(this->original_stage_size.y * this->stage_scaling)};
 
-    for (int i = 0; i < stage_loaded.size(); i++) {
+    for (size_t i = 0; i < stage_loaded.size(); i++) {
         if (stage_loaded[i]) {
             stage_loaded[i] = false;
             delete stages[i];
@@ -95,8 +95,8 @@ void StageScreen::render() {
     // Clear screen
     clear(GameStyle::GRAY);
 
-    for (int i = 0; i < stage_loaded.size(); i++) {
+    for (size_t i = 0; i < stage_loaded.size(); i++) {
         if (stage_loaded[i])
-            stages[i]->render(this);
+            stages[i]->render();
     }
 }

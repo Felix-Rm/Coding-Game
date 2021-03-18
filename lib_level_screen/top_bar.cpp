@@ -1,6 +1,6 @@
 #include "top_bar.h"
 
-TopBar::TopBar(LevelScreen *parent_window) : Drawable({}, {}) {
+TopBar::TopBar(LevelScreen *parent_window) : Drawable(nullptr, {}, {}) {
     this->window = parent_window;
     this->background_tex.loadFromFile("assets/textures/miscellaneous/top_bar.png");
     this->background.setTexture(this->background_tex);
@@ -78,17 +78,17 @@ void TopBar::updatePosition() {
 void TopBar::setPosition(float x, float y) {}
 void TopBar::shiftPosition(float dx, float dy) {}
 
-void TopBar::render(Window *window) {
-    window->draw(this->background);
-    window->draw(this->speed_text);
-    window->draw(this->time_text);
+void TopBar::render() {
+    this->window->draw(this->background);
+    this->window->draw(this->speed_text);
+    this->window->draw(this->time_text);
 
-    btn_play.render(this->window);
-    btn_stop.render(this->window);
-    btn_exit.render(this->window);
+    btn_play.render();
+    btn_stop.render();
+    btn_exit.render();
 
-    btn_speed_plus.render(this->window);
-    btn_speed_minus.render(this->window);
+    btn_speed_plus.render();
+    btn_speed_minus.render();
 }
 
 void TopBar::update() {

@@ -53,7 +53,7 @@ class Bot : public Drawable {
         backward
     };
 
-    Bot(sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream &data, LevelScreen *lvl);
+    Bot(Window *window, sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream &data, LevelScreen *lvl);
     void setPosition(float x, float y) override;
     void shiftPosition(float dx, float dy) override;
     void setScale(float s);
@@ -63,7 +63,7 @@ class Bot : public Drawable {
     bool rotate(option dir);
     bool drive(option dir);
 
-    void render(Window *window) override;
+    void render() override;
 
     void update();
 

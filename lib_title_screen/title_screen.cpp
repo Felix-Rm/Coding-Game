@@ -5,8 +5,7 @@ TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game"
 }
 
 void TitleScreen::setup() {
-    std::string button_names[] = {"Kampagne"};
-    //, "Sandbox", "Einstellungen", "Beenden"};
+    std::string button_names[] = {"Kampagne", "Sandbox", "Einstellungen", "Beenden"};
 
     Window::event_handler_t button_event_handlers[] = {
         Window::createEventHandler(runCampaign, this),
@@ -38,19 +37,18 @@ void TitleScreen::render() {
     // Clear screen
     clear(GameStyle::GRAY);
 
-    for (int i = 0; i < buttons.size(); i++) {
-        buttons[i].render(this);
+    for (size_t i = 0; i < buttons.size(); i++) {
+        buttons[i].render();
     }
 }
 
 bool TitleScreen::runCampaign(sf::Event &event, void *data) {
     TitleScreen *obj = (TitleScreen *)data;
-
-    StageScreen level_screen{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+    StageScreen stage_screen{obj->video_mode, "Campaign", obj->style};
 
     obj->setVisible(false);
 
-    while (level_screen.run())
+    while (stage_screen.run())
         ;
 
     obj->setVisible(true);

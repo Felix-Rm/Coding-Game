@@ -17,10 +17,13 @@ class Window : public sf::RenderWindow {
         sf::Uint32 react_mask = 0;
     } event_handler_t;
 
-    Window(sf::VideoMode v, std::string title, sf::Uint32 style);
+    Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 
     void addEventHandler(bool (*ptr)(sf::Event &, void *), void *data, int numEvents...);
     void removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data);
+
+    sf::VideoMode getVideoMode() { return video_mode; };
+    sf::Uint32 getStyle() { return style; };
 
     bool run();
 
@@ -31,6 +34,9 @@ class Window : public sf::RenderWindow {
     float framerate = 0;
 
    protected:
+    sf::Uint32 style;
+    sf::VideoMode video_mode;
+
     std::vector<event_handler_t> event_handlers;
 
     sf::Vector2f view_size;

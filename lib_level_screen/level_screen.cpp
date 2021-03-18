@@ -1,6 +1,6 @@
 #include "level_screen.h"
 
-LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(v, title, style) {
+LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(video_mode, title, style) {
     Tile::loadTextures();
     Bot::loadTextures();
 
@@ -21,24 +21,24 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, i
     this->origin.x = (this->view_size.x - (level_width * this->scale)) / 2;
     this->origin.y = (this->view_size.y - (level_height * this->scale)) / 2;
 
-    for (int y = 0; y < this->size.y; y++) {
+    for (size_t y = 0; y < this->size.y; y++) {
         this->map.push_back(std::vector<Tile *>());
         auto current_row = &this->map.back();
 
-        for (int x = 0; x < this->size.x; x++) {
+        for (size_t x = 0; x < this->size.x; x++) {
             int type;
             sf::Vector2f pos = {(float)x * Tile::tex_size.x, (float)y * Tile::tex_size.y};
             level_info >> type;
 
             switch (type) {
                 case tile_types::AIR:
-                    current_row->push_back(new Tile(false, tile_types::AIR, pos));
+                    current_row->push_back(new Tile(this, false, tile_types::AIR, pos));
                     break;
                 case tile_types::FLOOR:
-                    current_row->push_back(new Tile(true, tile_types::FLOOR, pos));
+                    current_row->push_back(new Tile(this, true, tile_types::FLOOR, pos));
                     break;
                 case tile_types::WALL:
-                    current_row->push_back(new Tile(false, tile_types::WALL, pos));
+                    current_row->push_back(new Tile(this, false, tile_types::WALL, pos));
                     break;
 
                 default:
@@ -53,7 +53,7 @@ LevelScreen::LevelScreen(sf::VideoMode v, std::string title, sf::Uint32 style, i
     for (int i = 0; i < num_bots; i++) {
         int x, y;
         level_info >> x >> y;
-        bots.push_back(new Bot({(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
+        bots.push_back(new Bot(this, {(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
     }
 
     updatePosition();
@@ -93,9 +93,9 @@ void LevelScreen::setup() {
 void LevelScreen::render() {
     clear();
 
-    for (int y = 0; y < this->size.y; y++) {
-        for (int x = 0; x < this->size.x; x++) {
-            map[y][x]->render(this);
+    for (size_t y = 0; y < this->size.y; y++) {
+        for (size_t x = 0; x < this->size.x; x++) {
+            map[y][x]->render();
         }
     }
 
@@ -103,14 +103,14 @@ void LevelScreen::render() {
         bots[i]->update();
 
     for (int i = 0; i < num_bots; i++)
-        bots[i]->render(this);
+        bots[i]->render();
 
-    top_bar->render(this);
+    top_bar->render();
 }
 
 void LevelScreen::updatePosition() {
-    for (int y = 0; y < this->size.y; y++) {
-        for (int x = 0; x < this->size.x; x++) {
+    for (size_t y = 0; y < this->size.y; y++) {
+        for (size_t x = 0; x < this->size.x; x++) {
             map[y][x]->setScale(this->scale);
             map[y][x]->setPosition(this->origin.x + x * (Tile::tex_size.x * this->scale), this->origin.y + y * (Tile::tex_size.y * this->scale));
         }
