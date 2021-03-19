@@ -32,26 +32,26 @@ void TopBar::updatePosition() {
 
     //
 
-    this->btn_play = Button(this->window,
-                            {(float)(this->pos.x + this->size.x * (3.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                            {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                            "p", this->text_size * 0.8, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_play = ImageButton(this->window,
+                                 {(float)(this->pos.x + this->size.x * (3.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
+                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
+                                 GameStyle::Icon::PLAY, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
     this->btn_play.center();
 
-    this->btn_stop = Button(this->window,
-                            {(float)(this->pos.x + this->size.x * (4.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                            {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                            "s", this->text_size * 0.8, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_stop = ImageButton(this->window,
+                                 {(float)(this->pos.x + this->size.x * (4.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
+                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
+                                 GameStyle::Icon::STOP, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
     this->btn_stop.center();
 
-    this->btn_exit = Button(this->window,
-                            {(float)(this->pos.x + this->size.x * (5.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                            {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                            "e", this->text_size * 0.8, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler([](sf::Event &event, void *data) {
-                                ((Window *)data)->close();
-                                return true;
-                            },
-                                                                                                                         this->window));
+    this->btn_exit = ImageButton(this->window,
+                                 {(float)(this->pos.x + this->size.x * (5.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
+                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
+                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler([](sf::Event &event, void *data) {
+                                     ((Window *)data)->close();
+                                     return true;
+                                 },
+                                                                                                                              this->window));
     this->btn_exit.center();
 
     //

@@ -16,3 +16,18 @@ const sf::Color GameStyle::BLACK = {0, 0, 0};
 const sf::Color GameStyle::WHITE = {255, 255, 255};
 
 sf::Font GameStyle::game_font = sf::Font();
+sf::Texture GameStyle::icons[];
+bool GameStyle::loaded = false;
+
+bool GameStyle::setup() {
+    if (!game_font.loadFromFile("assets/font3.ttf"))
+        return false;
+
+    for (int i = 0; i < Icon::_COUNT; i++) {
+        if (!icons[i].loadFromFile("assets/textures/icons/" + std::to_string(i) + ".png"))
+            return false;
+    }
+
+    loaded = true;
+    return true;
+}

@@ -1,9 +1,12 @@
-#include "button.h"
+#include "image_button.h"
 
-Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(window, pos, size) {
+ImageButton::ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id, float image_scale, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(window, pos, size) {
     this->bg_color = bg_color;
     this->window = window;
     this->handler = handler;
+    this->outline_thickness = outline_thickness;
+    this->icon_id = icon_id;
+    this->image_scale = image_scale;
 
     this->background = sf::RectangleShape(size);
     this->background.setPosition(pos);
@@ -11,52 +14,59 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
     this->background.setOutlineThickness(outline_thickness);
     this->background.setOutlineColor({(sf::Uint8)(bg_color.r * 0.5), (sf::Uint8)(bg_color.g * 0.5), (sf::Uint8)(bg_color.b * 0.5)});
 
-    this->text = sf::Text(text, GameStyle::game_font, text_size);
-    this->text.setFillColor(fg_color);
-    this->text.setStyle(sf::Text::Bold);
-
-    sf::FloatRect text_bounds = this->text.getLocalBounds();
-    this->text.setPosition({pos.x - text_bounds.left + size.x / 2 - text_bounds.width / 2, pos.y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
-
     this->window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     this->window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
 
     //printf("construct %p\n", this);
 }
 
-Button::~Button() {
+ImageButton::~ImageButton() {
     this->window->removeEventHandler(onMouseMove, this);
     this->window->removeEventHandler(onMousePress, this);
     //printf("destruct  %p\n", this);
 }
 
-void Button::copyFrom(Button &other) {
+void ImageButton::loadImage() {
+    this->image = sf::Sprite(GameStyle::icons[icon_id]);
+
+    float scale = (this->size.y * image_scale) / this->image.getLocalBounds().height;
+    this->image.setScale(scale, scale);
+
+    sf::FloatRect image_bounds = this->image.getGlobalBounds();
+    sf::Vector2f image_pos = {pos.x + size.x / 2 - image_bounds.width / 2,
+                              pos.y + size.y / 2 - image_bounds.height / 2};
+    this->image.setPosition(image_pos);
+}
+
+void ImageButton::copyFrom(ImageButton &other) {
     handler = other.handler;
     background = other.background;
-    text = other.text;
+    icon_id = other.icon_id;
     highlighted = other.highlighted;
+    outline_thickness = other.outline_thickness;
+    image_scale = other.image_scale;
     bg_color = other.bg_color;
 }
 
-void Button::render() {
+void ImageButton::render() {
     this->window->draw(background);
-    this->window->draw(text);
+    this->window->draw(image);
 }
 
-Button &Button::center() {
+ImageButton &ImageButton::center() {
     sf::Vector2f button_size = background.getSize();
     pos.x -= button_size.x / 2;
     pos.y -= button_size.y / 2;
 
     background.setPosition(pos);
 
-    text.move({-button_size.x / 2, -button_size.y / 2});
+    image.move({-button_size.x / 2, -button_size.y / 2});
 
     return *this;
 }
 
-bool Button::onMouseMove(sf::Event &event, void *_obj) {
-    Button *obj = (Button *)_obj;
+bool ImageButton::onMouseMove(sf::Event &event, void *_obj) {
+    ImageButton *obj = (ImageButton *)_obj;
 
     auto &mouseX = event.mouseMove.x;
     auto &mouseY = event.mouseMove.y;
@@ -76,8 +86,8 @@ bool Button::onMouseMove(sf::Event &event, void *_obj) {
     return false;
 }
 
-bool Button::onMousePress(sf::Event &event, void *_obj) {
-    Button *obj = (Button *)_obj;
+bool ImageButton::onMousePress(sf::Event &event, void *_obj) {
+    ImageButton *obj = (ImageButton *)_obj;
 
     auto &mouseX = event.mouseButton.x;
     auto &mouseY = event.mouseButton.y;
@@ -91,17 +101,16 @@ bool Button::onMousePress(sf::Event &event, void *_obj) {
     return false;
 }
 
-void Button::setPosition(float x, float y) {
+void ImageButton::setPosition(float x, float y) {
     this->pos = {x, y};
     this->background.setPosition(this->pos);
 
-    sf::FloatRect text_bounds = this->text.getLocalBounds();
-    this->text.setPosition({x - text_bounds.left + size.x / 2 - text_bounds.width / 2, y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
+    loadImage();
 }
 
-void Button::shiftPosition(float dx, float dy) {
+void ImageButton::shiftPosition(float dx, float dy) {
     this->pos.x += dx;
     this->pos.y += dy;
     this->background.move(dx, dy);
-    this->text.move(dx, dy);
+    this->image.move(dx, dy);
 }

@@ -2,24 +2,31 @@
 
 #include "drawable.h"
 
-class Button : public Drawable {
+class ImageButton : public Drawable {
    private:
     Window::event_handler_t handler;
 
     sf::RectangleShape background;
-    sf::Text text;
+    sf::Texture texture;
+    sf::Sprite image;
 
+    float image_scale;
+    int outline_thickness;
     bool highlighted = false;
     sf::Color bg_color;
+    GameStyle::Icon icon_id;
 
-    void copyFrom(Button &other);
+    void loadImage();
+
+    void copyFrom(ImageButton &other);
 
    public:
-    Button() : Drawable(nullptr, {0, 0}, {0, 0}) {}
-    Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
+    ImageButton() : Drawable(nullptr, {0, 0}, {0, 0}) {}
+    ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id, float image_scale, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
 
-    Button(Button &&other) : Drawable(other.window, other.pos, other.size) {
+    ImageButton(ImageButton &&other) : Drawable(other.window, other.pos, other.size) {
         copyFrom(other);
+        loadImage();
 
         window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
         window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
@@ -27,19 +34,23 @@ class Button : public Drawable {
         //printf("move %p to %p\n", &other, this);
     }
 
-    Button(Button &other) : Drawable(other.window, other.pos, other.size) {
+    ImageButton(ImageButton &other) : Drawable(other.window, other.pos, other.size) {
         copyFrom(other);
+        loadImage();
+
         window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
         window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
 
         //printf("copy to %p\n", this);
     }
 
-    Button &operator=(Button &&other) {
+    ImageButton &operator=(ImageButton &&other) {
         window = other.window;
         pos = other.pos;
         size = other.size;
+
         copyFrom(other);
+        loadImage();
 
         window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
         window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
@@ -48,9 +59,9 @@ class Button : public Drawable {
         return *this;
     }
 
-    ~Button();
+    ~ImageButton();
 
-    Button &center();
+    ImageButton &center();
 
     void render() override;
     void setPosition(float x, float y) override;

@@ -11,6 +11,13 @@ StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     for (int i = 0; i < num_stages; i++)
         stage_loaded.push_back(false);
 
+    this->btn_exit = ImageButton(this, {0, 0}, {60, 60},
+                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::RED, Window::createEventHandler([](sf::Event &event, void *data) {
+                                     ((Window *)data)->close();
+                                     return true;
+                                 },
+                                                                                                                             this));
+
     setup();
 
     addEventHandler(onMouseScroll, this, 1, sf::Event::EventType::MouseWheelScrolled);
@@ -73,7 +80,9 @@ void StageScreen::constrainScroll() {
 }
 
 void StageScreen::setup() {
-    this->view_size = (sf::Vector2f)this->getView().getSize();
+    //this->view_size = (sf::Vector2f)this->getView().getSize();
+
+    btn_exit.setPosition(view_size.x - 70, 10);
 
     sf::Vector2f window_size = (sf::Vector2f)this->getSize();
     setView(sf::View(sf::FloatRect(0, 0, window_size.x, window_size.y)));
@@ -99,4 +108,6 @@ void StageScreen::render() {
         if (stage_loaded[i])
             stages[i]->render();
     }
+
+    btn_exit.render();
 }

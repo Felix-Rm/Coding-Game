@@ -33,6 +33,8 @@ class StageScreen : public Window {
 
     static bool onMouseScroll(sf::Event &event, void *data);
 
+    ImageButton btn_exit;
+
    public:
     StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 };

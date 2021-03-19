@@ -5,7 +5,17 @@
 
 class GameStyle {
    public:
+    enum Icon {
+        PLAY,
+        PAUSE,
+        STOP,
+        EXIT,
+        _COUNT
+    };
+
+    static bool loaded;
     static sf::Font game_font;
+    static sf::Texture icons[_COUNT];
 
     static const sf::Color GRAY;
     static const sf::Color LIGHT_GRAY;
@@ -21,4 +31,6 @@ class GameStyle {
     static const sf::Color GOLD;
     static const sf::Color BLACK;
     static const sf::Color WHITE;
+
+    static bool setup();
 };
