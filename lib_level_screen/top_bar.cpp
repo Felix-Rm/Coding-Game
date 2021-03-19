@@ -16,63 +16,67 @@ void TopBar::updatePosition() {
     this->pos = {(this->window->view_size.x - this->size.x) / 2, 0};
     this->background.setPosition(this->pos);
 
-    this->time_text = sf::Text("00:00s", GameStyle::game_font, text_size);
+    this->time_text = sf::Text("", GameStyle::game_font, text_size);
     this->time_text.setFillColor(GameStyle::GOLD);
     this->time_text.setStyle(sf::Text::Bold);
 
-    auto temp_bounds = this->time_text.getLocalBounds();
-
-    this->time_text.setPosition(
-        this->pos.x + (this->size.x * (3 / 9.0) - temp_bounds.width) / 2 - temp_bounds.left,
-        this->pos.y + (this->size.y - temp_bounds.height) / 2 - temp_bounds.top);
-
-    this->speed_text = sf::Text("100%", GameStyle::game_font, text_size);
+    this->speed_text = sf::Text("", GameStyle::game_font, text_size);
     this->speed_text.setFillColor(GameStyle::GOLD);
     this->speed_text.setStyle(sf::Text::Bold);
 
-    //
+    update();
 
-    this->btn_play = ImageButton(this->window,
-                                 {(float)(this->pos.x + this->size.x * (3.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                                 GameStyle::Icon::PLAY, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_play = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
+                                 GameStyle::Icon::PLAY, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_noop, nullptr));
     this->btn_play.center();
 
-    this->btn_stop = ImageButton(this->window,
-                                 {(float)(this->pos.x + this->size.x * (4.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                                 GameStyle::Icon::STOP, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_stop = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
+                                 GameStyle::Icon::STOP, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_noop, nullptr));
     this->btn_stop.center();
 
-    this->btn_exit = ImageButton(this->window,
-                                 {(float)(this->pos.x + this->size.x * (5.5 / 9.0) + this->size.x * (1 / 9)), (float)(this->pos.y + this->size.y * 0.5)},
-                                 {(float)(this->size.y * 0.8), (float)(this->size.y * 0.8)},
-                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler([](sf::Event &event, void *data) {
-                                     ((Window *)data)->close();
-                                     return true;
-                                 },
-                                                                                                                              this->window));
+    this->btn_exit = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
+                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_close, this->window));
     this->btn_exit.center();
 
-    //
-
-    temp_bounds = this->speed_text.getLocalBounds();
-
-    this->speed_text.setPosition(
-        this->pos.x + this->size.x * (6 / 9.0) + (this->size.x * (2 / 9.0) - temp_bounds.width) / 2 - temp_bounds.left,
-        this->pos.y + (this->size.y - temp_bounds.height) / 2 - temp_bounds.top);
-
-    this->btn_speed_plus = Button(this->window,
-                                  {(float)(this->pos.x + this->size.x * (6 / 9.0) + this->size.x * (2.5 / 9)), (float)(this->pos.y + this->size.y * (1 / 4.0))},
-                                  {(float)(this->size.y * (1 / 3.0)), (float)(this->size.y * (1 / 3.0))},
-                                  "+", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_speed_plus = Button(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
+                                  "+", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_plus, this));
     this->btn_speed_plus.center();
 
-    this->btn_speed_minus = Button(this->window,
-                                   {(float)(this->pos.x + this->size.x * (6 / 9.0) + this->size.x * (2.5 / 9)), (float)(this->pos.y + this->size.y * (3 / 4.0))},
-                                   {(float)(this->size.y * (1 / 3.0)), (float)(this->size.y * (1 / 3.0))},
-                                   "-", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::noop, nullptr));
+    this->btn_speed_minus = Button(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
+                                   "-", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_minus, this));
     this->btn_speed_minus.center();
+
+    auto time_text_bounds = this->time_text.getLocalBounds();
+    auto btn_play_bounds = this->btn_play.getLocalBounds();
+    auto btn_stop_bounds = this->btn_stop.getLocalBounds();
+    auto btn_exit_bounds = this->btn_exit.getLocalBounds();
+    auto speed_text_bounds = this->speed_text.getLocalBounds();
+    auto btn_speed_plus_bounds = this->btn_speed_plus.getLocalBounds();
+    //auto btn_speed_minus_bounds = this->btn_speed_minus.getLocalBounds();
+
+    float free_space = size.x - (time_text_bounds.width + btn_play_bounds.width + btn_stop_bounds.width + btn_exit_bounds.width + speed_text_bounds.width + btn_speed_plus_bounds.width);
+    float padding = free_space / (2 + 5);
+
+    float common_pos_y = pos.y + size.y * 0.1;
+    float current_pos_x = pos.x + padding;
+
+    this->time_text.setPosition(current_pos_x, common_pos_y - time_text_bounds.top / 2);
+    current_pos_x += time_text_bounds.width + padding;
+
+    this->btn_play.setPosition(current_pos_x, common_pos_y);
+    current_pos_x += btn_play_bounds.width + padding;
+
+    this->btn_stop.setPosition(current_pos_x, common_pos_y);
+    current_pos_x += btn_stop_bounds.width + padding;
+
+    this->btn_exit.setPosition(current_pos_x, common_pos_y);
+    current_pos_x += btn_exit_bounds.width + padding;
+
+    this->speed_text.setPosition(current_pos_x, common_pos_y - speed_text_bounds.top / 2);
+    current_pos_x += speed_text_bounds.width + padding;
+
+    this->btn_speed_plus.setPosition(current_pos_x, common_pos_y);
+    this->btn_speed_minus.setPosition(current_pos_x, common_pos_y + btn_speed_plus_bounds.height + size.y * 0.1);
 }
 
 void TopBar::setPosition(float x, float y) {}
@@ -100,4 +104,30 @@ void TopBar::update() {
     sprintf(buffer, "%02d:%02d:%01ds", time_part_minutes, time_part_seconds, time_part_milliseconds);
 
     this->time_text.setString(std::string(buffer));
+
+    window->ms_per_unit_movement = window->original_ms_per_unit_movement / window->movement_multiplyer;
+
+    sprintf(buffer, "%03dx", window->movement_multiplyer);
+
+    this->speed_text.setString(std::string(buffer));
 }
+
+bool TopBar::event_speed_plus(sf::Event &, void *data) {
+    TopBar *top_bar = ((TopBar *)data);
+    LevelScreen *window = top_bar->window;
+
+    if (window->movement_multiplyer < 128) window->movement_multiplyer *= 2;
+    top_bar->update();
+
+    return true;
+};
+
+bool TopBar::event_speed_minus(sf::Event &, void *data) {
+    TopBar *top_bar = ((TopBar *)data);
+    LevelScreen *window = top_bar->window;
+
+    if (window->movement_multiplyer > 1) window->movement_multiplyer /= 2;
+    top_bar->update();
+
+    return true;
+};

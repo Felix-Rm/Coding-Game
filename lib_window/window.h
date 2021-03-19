@@ -29,7 +29,11 @@ class Window : public sf::RenderWindow {
 
     static event_handler_t createEventHandler(bool (*ptr)(sf::Event &, void *), void *data);
 
-    static bool noop(sf::Event &, void *) { return true; };
+    static bool event_noop(sf::Event &, void *) { return true; };
+    static bool event_close(sf::Event &, void *data) {
+        ((Window *)data)->close();
+        return true;
+    };
 
     float fps = 0;
     float mspf = 0;

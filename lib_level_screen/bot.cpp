@@ -136,7 +136,7 @@ bool Bot::rotate(option dir) {
 
     movement_complete = MOVING;
 
-    time_for_movement = 0.5 * movement_multiplyer;
+    time_for_movement = 0.5 * ((LevelScreen *)window)->ms_per_unit_movement;
     level->elapsed_time += 0.5;
 
     return true;
@@ -197,7 +197,7 @@ bool Bot::drive(option dir) {
     movement_complete = MOVING;
 
     float length = (int)current_rotation % 90 == 0 ? 1 : 1.5;
-    time_for_movement = length * movement_multiplyer;
+    time_for_movement = length * ((LevelScreen *)window)->ms_per_unit_movement;
     level->elapsed_time += length;
 
     return true;

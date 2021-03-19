@@ -20,8 +20,7 @@ class Bot : public Drawable {
         JUST_DONE
     };
 
-    static constexpr long movement_multiplyer = 1000;
-
+  
     static std::string path;
     static bool textures_loaded;
 

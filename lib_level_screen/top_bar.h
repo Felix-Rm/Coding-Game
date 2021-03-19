@@ -19,6 +19,9 @@ class TopBar : public Drawable {
     Button btn_speed_plus, btn_speed_minus;
     ImageButton btn_stop, btn_play, btn_exit;
 
+    static bool event_speed_plus(sf::Event &, void *data);
+    static bool event_speed_minus(sf::Event &, void *data);
+
     float text_size;
 
     LevelScreen *window;

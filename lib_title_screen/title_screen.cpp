@@ -9,8 +9,8 @@ void TitleScreen::setup() {
 
     Window::event_handler_t button_event_handlers[] = {
         Window::createEventHandler(runCampaign, this),
-        Window::createEventHandler(Window::noop, nullptr),
-        Window::createEventHandler(Window::noop, nullptr),
+        Window::createEventHandler(Window::event_noop, nullptr),
+        Window::createEventHandler(Window::event_noop, nullptr),
         Window::createEventHandler([](sf::Event &event, void *data) {
             ((Window *)data)->close();
             return true;

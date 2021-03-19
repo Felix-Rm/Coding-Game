@@ -19,6 +19,10 @@ class Drawable {
 
     virtual ~Drawable(){};
 
+    virtual sf::FloatRect getLocalBounds() {
+        return sf::FloatRect({0, 0}, size);
+    }
+
     virtual void setPosition(float x, float y) = 0;
     virtual void shiftPosition(float dx, float dy) = 0;
 

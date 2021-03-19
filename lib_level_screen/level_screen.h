@@ -34,7 +34,11 @@ class LevelScreen : public Window {
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
 
-    
+    static constexpr long original_ms_per_unit_movement = 1000;
+    int movement_multiplyer = 1;
+
+    long ms_per_unit_movement;
+
     float elapsed_time = 0;
 
     TopBar *top_bar;
