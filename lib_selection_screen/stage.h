@@ -2,7 +2,7 @@
 
 #include "lib_window/window.h"
 #include "lib_window/drawable.h"
-#include "lib_window/button.h"
+#include "lib_window/text_button.h"
 #include "lib_window/style.h"
 
 #include "lib_level_screen/level_screen.h"
@@ -16,7 +16,7 @@ class Stage : public Drawable {
     sf::Sprite background;
 
     std::vector<std::pair<Stage *, int>> level_executor_info;
-    std::vector<Button> level_buttons;
+    std::vector<TextButton> level_buttons;
     int num_buttons = 0;
 
     static bool run_level(sf::Event &event, void *data);

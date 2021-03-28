@@ -38,12 +38,12 @@ void TopBar::updatePosition() {
                                  GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_close, this->window));
     this->btn_exit.center();
 
-    this->btn_speed_plus = Button(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
-                                  "+", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_plus, this));
+    this->btn_speed_plus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
+                                      "+", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_plus, this));
     this->btn_speed_plus.center();
 
-    this->btn_speed_minus = Button(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
-                                   "-", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_minus, this));
+    this->btn_speed_minus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
+                                       "-", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_minus, this));
     this->btn_speed_minus.center();
 
     auto time_text_bounds = this->time_text.getLocalBounds();

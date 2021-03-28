@@ -10,6 +10,7 @@ class GameStyle {
         PAUSE,
         STOP,
         EXIT,
+        EDIT,
         _COUNT
     };
 
@@ -17,6 +18,7 @@ class GameStyle {
     static sf::Font game_font;
     static sf::Texture icons[_COUNT];
 
+    static const sf::Color DARK_GRAY;
     static const sf::Color GRAY;
     static const sf::Color LIGHT_GRAY;
     static const sf::Color RED;

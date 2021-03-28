@@ -1,6 +1,7 @@
 #include "style.h"
 
-const sf::Color GameStyle::GRAY = {30, 30, 30};
+const sf::Color GameStyle::DARK_GRAY = {30, 30, 30};
+const sf::Color GameStyle::GRAY = {90, 90, 90};
 const sf::Color GameStyle::LIGHT_GRAY = {166, 166, 166};
 const sf::Color GameStyle::RED = {255, 74, 74};
 const sf::Color GameStyle::ORANGE = {255, 198, 74};

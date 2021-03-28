@@ -9,7 +9,7 @@ void TitleScreen::setup() {
 
     Window::event_handler_t button_event_handlers[] = {
         Window::createEventHandler(runCampaign, this),
-        Window::createEventHandler(Window::event_noop, nullptr),
+        Window::createEventHandler(runSandbox, this),
         Window::createEventHandler(Window::event_noop, nullptr),
         Window::createEventHandler([](sf::Event &event, void *data) {
             ((Window *)data)->close();
@@ -29,13 +29,13 @@ void TitleScreen::setup() {
 
     for (int i = 0; i < button_names_length; i++) {
         sf::Vector2f pos = {this->view_size.x / 2 - button_size.x / 2, vertical_start + i * (button_size.y + button_vertical_spacing)};
-        buttons.push_back(Button(this, pos, button_size, button_names[i], button_text_size, button_outline_thickness, GameStyle::LIGHT_GRAY, GameStyle::ORANGE, button_event_handlers[i]));
+        buttons.push_back(TextButton(this, pos, button_size, button_names[i], button_text_size, button_outline_thickness, GameStyle::LIGHT_GRAY, GameStyle::ORANGE, button_event_handlers[i]));
     }
 }
 
 void TitleScreen::render() {
     // Clear screen
-    clear(GameStyle::GRAY);
+    clear(GameStyle::DARK_GRAY);
 
     for (size_t i = 0; i < buttons.size(); i++) {
         buttons[i].render();
@@ -49,6 +49,20 @@ bool TitleScreen::runCampaign(sf::Event &event, void *data) {
     obj->setVisible(false);
 
     while (stage_screen.run())
+        ;
+
+    obj->setVisible(true);
+
+    return true;
+}
+
+bool TitleScreen::runSandbox(sf::Event &event, void *data) {
+    TitleScreen *obj = (TitleScreen *)data;
+    SandboxScreen sandbox_screen{obj->video_mode, "Sandbox", obj->style};
+
+    obj->setVisible(false);
+
+    while (sandbox_screen.run())
         ;
 
     obj->setVisible(true);

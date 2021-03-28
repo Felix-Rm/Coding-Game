@@ -1,12 +1,6 @@
 #include "selection_screen.h"
 
-SelectionScreen ::SelectionScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : Window(video_mode, title, style) {
-    this->btn_exit = ImageButton(this, {0, 0}, {60, 60},
-                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::RED, Window::createEventHandler([](sf::Event &event, void *data) {
-                                     ((Window *)data)->close();
-                                     return true;
-                                 },
-                                                                                                                             this));
+SelectionScreen::SelectionScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : Window(video_mode, title, style) {
 }
 
 void SelectionScreen::calculateStagePositions() {
@@ -68,8 +62,6 @@ void SelectionScreen::constrainScroll() {
 void SelectionScreen::setup_selection() {
     //this->view_size = (sf::Vector2f)this->getView().getSize();
 
-    btn_exit.setPosition(view_size.x - 70, 10);
-
     sf::Vector2f window_size = (sf::Vector2f)this->getSize();
     setView(sf::View(sf::FloatRect(0, 0, window_size.x, window_size.y)));
 
@@ -94,6 +86,4 @@ void SelectionScreen::render_selection() {
         if (stage_loaded[i])
             stages[i]->render();
     }
-
-    btn_exit.render();
 }

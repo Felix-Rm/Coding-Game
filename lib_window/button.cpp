@@ -1,8 +1,7 @@
 #include "button.h"
 
-Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler) : Drawable(window, pos, size) {
+Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, int outline_thickness, sf::Color bg_color, Window::event_handler_t handler) : Drawable(window, pos, size) {
     this->bg_color = bg_color;
-    this->window = window;
     this->handler = handler;
 
     this->background = sf::RectangleShape(size);
@@ -11,36 +10,24 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string 
     this->background.setOutlineThickness(outline_thickness);
     this->background.setOutlineColor({(sf::Uint8)(bg_color.r * 0.5), (sf::Uint8)(bg_color.g * 0.5), (sf::Uint8)(bg_color.b * 0.5)});
 
-    this->text = sf::Text(text, GameStyle::game_font, text_size);
-    this->text.setFillColor(fg_color);
-    this->text.setStyle(sf::Text::Bold);
-
-    sf::FloatRect text_bounds = this->text.getLocalBounds();
-    this->text.setPosition({pos.x - text_bounds.left + size.x / 2 - text_bounds.width / 2, pos.y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
-
     this->window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     this->window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
-
-    //printf("construct %p\n", this);
 }
 
 Button::~Button() {
     this->window->removeEventHandler(onMouseMove, this);
     this->window->removeEventHandler(onMousePress, this);
-    //printf("destruct  %p\n", this);
 }
 
 void Button::copyFrom(Button &other) {
     handler = other.handler;
     background = other.background;
-    text = other.text;
     highlighted = other.highlighted;
     bg_color = other.bg_color;
 }
 
 void Button::render() {
     this->window->draw(background);
-    this->window->draw(text);
 }
 
 Button &Button::center() {
@@ -49,8 +36,6 @@ Button &Button::center() {
     pos.y -= button_size.y / 2;
 
     background.setPosition(pos);
-
-    text.move({-button_size.x / 2, -button_size.y / 2});
 
     return *this;
 }
@@ -91,17 +76,19 @@ bool Button::onMousePress(sf::Event &event, void *_obj) {
     return false;
 }
 
+void Button::setBgColor(sf::Color c) {
+    this->bg_color = c;
+    this->background.setFillColor(bg_color);
+    this->background.setOutlineColor({(sf::Uint8)(bg_color.r * 0.5), (sf::Uint8)(bg_color.g * 0.5), (sf::Uint8)(bg_color.b * 0.5)});
+};
+
 void Button::setPosition(float x, float y) {
     this->pos = {x, y};
     this->background.setPosition(this->pos);
-
-    sf::FloatRect text_bounds = this->text.getLocalBounds();
-    this->text.setPosition({x - text_bounds.left + size.x / 2 - text_bounds.width / 2, y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
 }
 
 void Button::shiftPosition(float dx, float dy) {
     this->pos.x += dx;
     this->pos.y += dy;
     this->background.move(dx, dy);
-    this->text.move(dx, dy);
 }

@@ -5,7 +5,9 @@ Stage::Stage(Window *window, std::string path, int stage_number, float scale, Wi
 
     printf("%s\n", this->path.c_str());
 
-    this->background_tex.loadFromFile(this->path + "background.png");
+    if (!this->background_tex.loadFromFile(this->path + "background.png"))
+        throw std::runtime_error("[Stage] Could not open background.png: " + this->path + "background.png");
+
     this->background = sf::Sprite(this->background_tex);
 
     this->background.setScale({scale, scale});
@@ -42,7 +44,7 @@ Stage::Stage(Window *window, std::string path, int stage_number, float scale, Wi
         snprintf(title, sizeof(title), "%dx%02x", stage_number, i);
 
         level_executor_info.push_back({this, i});
-        level_buttons.push_back(Button(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(event_handler, &(level_executor_info[i]))));
+        level_buttons.push_back(TextButton(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(event_handler, &(level_executor_info[i]))));
 
         printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }

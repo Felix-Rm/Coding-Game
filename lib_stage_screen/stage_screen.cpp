@@ -19,6 +19,7 @@ StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
                                      ((Window *)data)->close();
                                      return true;
                                  },
+
                                                                                                                              this));
 
     setup();
@@ -47,9 +48,13 @@ bool StageScreen::run_level(sf::Event &event, void *data) {
 }
 
 void StageScreen::setup() {
+    btn_exit.setPosition(view_size.x - 70, 10);
+
     setup_selection();
 }
 
 void StageScreen::render() {
     render_selection();
+
+    btn_exit.render();
 }

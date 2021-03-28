@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "lib_window/window.h"
-#include "lib_window/button.h"
+#include "lib_window/text_button.h"
 #include "lib_window/style.h"
 
 #include "stage.h"
@@ -37,8 +37,6 @@ class SelectionScreen : public Window {
     void render_selection();
 
     static bool onMouseScroll_selection(sf::Event &event, void *data);
-
-    ImageButton btn_exit;
 
    public:
     SelectionScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);

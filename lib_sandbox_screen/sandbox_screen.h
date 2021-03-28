@@ -14,7 +14,11 @@ class SandboxScreen : public SelectionScreen {
     void render() override;
 
     static bool onMouseScroll(sf::Event &event, void *data);
+    static bool onEditToggle(sf::Event &event, void *data);
     static bool run_level(sf::Event &event, void *data);
+    bool edit_activated = false;
+
+    ImageButton btn_exit, btn_edit;
 
    public:
     SandboxScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);

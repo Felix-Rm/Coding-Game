@@ -7,7 +7,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "../lib_window/window.h"
-#include "../lib_window/button.h"
 #include "../lib_window/style.h"
 
 #include "top_bar.h"

@@ -18,6 +18,25 @@ class Drawable {
         this->size = size;
     }
 
+    Drawable(Drawable&& other) {
+        pos = other.pos;
+        size = other.size;
+        window = other.window;
+    }
+
+    Drawable(Drawable& other) {
+        pos = other.pos;
+        size = other.size;
+        window = other.window;
+    }
+
+    Drawable& operator=(Drawable&& other) {
+        window = other.window;
+        pos = other.pos;
+        size = other.size;
+        return *this;
+    }
+
     virtual ~Drawable(){};
 
     virtual sf::FloatRect getLocalBounds() {
