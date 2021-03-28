@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lib_window/window.h"
 #include "lib_window/drawable.h"
 #include "lib_window/button.h"
 #include "lib_window/style.h"
@@ -18,12 +19,10 @@ class Stage : public Drawable {
     std::vector<Button> level_buttons;
     int num_buttons = 0;
 
-    std::string path;
-
     static bool run_level(sf::Event &event, void *data);
 
    public:
-    Stage(Window *window, int stage_number, float scale);
+    Stage(Window *window, std::string path, int stage_number, float scale, Window::event_handler_fnk_t event_handler);
     ~Stage();
 
     void render() override;
@@ -33,4 +32,6 @@ class Stage : public Drawable {
 
     static bool onMouseMove(sf::Event &event, void *);
     static bool onMousePress(sf::Event &event, void *);
+
+    std::string path;
 };

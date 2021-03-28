@@ -10,24 +10,25 @@
 
 class Window : public sf::RenderWindow {
    public:
+    typedef bool (*event_handler_fnk_t)(sf::Event &, void *);
     typedef struct
     {
-        bool (*ptr)(sf::Event &, void *);
+        event_handler_fnk_t ptr;
         void *data;
         sf::Uint32 react_mask = 0;
     } event_handler_t;
 
     Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 
-    void addEventHandler(bool (*ptr)(sf::Event &, void *), void *data, int numEvents...);
-    void removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data);
+    void addEventHandler(event_handler_fnk_t ptr, void *data, int numEvents...);
+    void removeEventHandler(event_handler_fnk_t ptr, void *data);
 
     sf::VideoMode getVideoMode() { return video_mode; };
     sf::Uint32 getStyle() { return style; };
 
     bool run();
 
-    static event_handler_t createEventHandler(bool (*ptr)(sf::Event &, void *), void *data);
+    static event_handler_t createEventHandler(event_handler_fnk_t ptr, void *data);
 
     static bool event_noop(sf::Event &, void *) { return true; };
     static bool event_close(sf::Event &, void *data) {

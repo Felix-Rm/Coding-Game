@@ -2,7 +2,7 @@
 
 TopBar::TopBar(LevelScreen *parent_window) : Drawable(nullptr, {}, {}) {
     this->window = parent_window;
-    this->background_tex.loadFromFile("assets/textures/miscellaneous/top_bar.png");
+    this->background_tex.loadFromFile("_assets/textures/miscellaneous/top_bar.png");
     this->background.setTexture(this->background_tex);
 
     this->size = {this->background.getGlobalBounds().width, this->background.getGlobalBounds().height};

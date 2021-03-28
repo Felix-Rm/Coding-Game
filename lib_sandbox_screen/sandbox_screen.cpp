@@ -1,10 +1,10 @@
-#include "stage_screen.h"
+#include "sandbox_screen.h"
 
-StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : SelectionScreen(video_mode, title, style) {
-    this->stage_path = "_assets/stages/";
-    this->onOpenLevel = StageScreen::run_level;
+SandboxScreen::SandboxScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : SelectionScreen(video_mode, title, style) {
+    this->stage_path = "_user/stages/";
+    this->onOpenLevel = SandboxScreen::run_level;
 
-    std::ifstream stage_info("_assets/stages.info");
+    std::ifstream stage_info("_user/stages.info");
     if (!stage_info)
         throw std::runtime_error("could not open stage info");
 
@@ -26,14 +26,14 @@ StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     addEventHandler(onMouseScroll, this, 1, sf::Event::EventType::MouseWheelScrolled);
 }
 
-bool StageScreen::onMouseScroll(sf::Event &event, void *data) {
-    StageScreen *obj = (StageScreen *)data;
+bool SandboxScreen::onMouseScroll(sf::Event &event, void *data) {
+    SandboxScreen *obj = (SandboxScreen *)data;
 
     obj->onMouseScroll_selection(event, data);
     return true;
 }
 
-bool StageScreen::run_level(sf::Event &event, void *data) {
+bool SandboxScreen::run_level(sf::Event &event, void *data) {
     auto *info = (std::pair<Stage *, int> *)data;
 
     LevelScreen window{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
@@ -46,10 +46,10 @@ bool StageScreen::run_level(sf::Event &event, void *data) {
     return true;
 }
 
-void StageScreen::setup() {
+void SandboxScreen::setup() {
     setup_selection();
 }
 
-void StageScreen::render() {
+void SandboxScreen::render() {
     render_selection();
 }

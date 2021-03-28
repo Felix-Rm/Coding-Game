@@ -20,11 +20,11 @@ sf::Texture GameStyle::icons[];
 bool GameStyle::loaded = false;
 
 bool GameStyle::setup() {
-    if (!game_font.loadFromFile("assets/font3.ttf"))
+    if (!game_font.loadFromFile("_assets/font3.ttf"))
         return false;
 
     for (int i = 0; i < Icon::_COUNT; i++) {
-        if (!icons[i].loadFromFile("assets/textures/icons/" + std::to_string(i) + ".png"))
+        if (!icons[i].loadFromFile("_assets/textures/icons/" + std::to_string(i) + ".png"))
             return false;
     }
 

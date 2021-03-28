@@ -1,6 +1,6 @@
 #include "tile.h"
 
-const std::string Tile::path = "assets/textures/tiles/";
+const std::string Tile::path = "_assets/textures/tiles/";
 sf::Vector2f Tile::tex_size = {0, 0};
 bool Tile::textures_loaded = false;
 sf::Texture Tile::textures[tile_types::_COUNT];

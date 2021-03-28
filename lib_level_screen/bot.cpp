@@ -1,6 +1,6 @@
 #include "bot.h"
 
-std::string Bot::path = "assets/textures/bots/";
+std::string Bot::path = "_assets/textures/bots/";
 bool Bot::textures_loaded = false;
 sf::Texture Bot::textures[Bot::num_textures];
 sf::Vector2f Bot::delta_tile_position_per_update = {1.0 / Bot::updates_per_movement, 1.0 / Bot::updates_per_movement};

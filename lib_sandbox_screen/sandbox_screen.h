@@ -8,7 +8,7 @@
 
 #include "lib_selection_screen/selection_screen.h"
 
-class StageScreen : public SelectionScreen {
+class SandboxScreen : public SelectionScreen {
    private:
     void setup() override;
     void render() override;
@@ -17,5 +17,5 @@ class StageScreen : public SelectionScreen {
     static bool run_level(sf::Event &event, void *data);
 
    public:
-    StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
+    SandboxScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 };
