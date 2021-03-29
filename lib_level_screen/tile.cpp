@@ -3,14 +3,29 @@
 const std::string Tile::path = "_assets/textures/tiles/";
 sf::Vector2f Tile::tex_size = {0, 0};
 bool Tile::textures_loaded = false;
-sf::Texture Tile::textures[tile_types::_COUNT];
+sf::Texture Tile::textures[tile_type::_COUNT];
+bool Tile::type_drivable[tile_type::_COUNT] = {
+    false,
+    true,
+    false,
+    true};
 
-Tile::Tile(Window* window, bool is_drivable, int tex_id, sf::Vector2f pos) : Drawable(window, {pos.x, pos.y}, tex_size) {
+Tile::Tile(Window* window, tile_type type, sf::Vector2f pos) : Drawable(window, {pos.x, pos.y}, tex_size) {
     if (!textures_loaded)
         throw std::runtime_error("Textures have to be loaded before Tile can be constructed!");
 
-    this->background = sf::Sprite(textures[tex_id]);
-    this->background.setPosition(this->pos);
+    this->type = type;
+    this->drivable = type_drivable[(int)type];
+    loadBackground();
+}
+
+std::ifstream& operator>>(std::ifstream& data, Tile&) {
+    return data;
+};
+
+std::ofstream& operator<<(std::ofstream& data, const Tile& obj) {
+    data << ((int)obj.type);
+    return data;
 }
 
 void Tile::loadTextures() {
@@ -18,12 +33,22 @@ void Tile::loadTextures() {
         return;
     }
 
-    for (int i = 0; i < tile_types::_COUNT; i++) {
+    for (int i = 0; i < tile_type::_COUNT; i++) {
         textures[i].loadFromFile(path + std::to_string(i) + ".png");
     }
 
     tex_size = (sf::Vector2f)textures[0].getSize();
     textures_loaded = true;
+}
+
+void Tile::loadBackground() {
+    this->background = sf::Sprite(textures[this->type]);
+    this->background.setPosition(this->pos);
+}
+
+void Tile::copyFrom(Tile& other) {
+    drivable = other.drivable;
+    type = other.type;
 }
 
 void Tile::setPosition(float x, float y) {

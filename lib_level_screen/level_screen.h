@@ -11,6 +11,7 @@
 
 #include "top_bar.h"
 #include "tile.h"
+#include "spawner_tile.h"
 #include "bot.h"
 
 class Bot;
@@ -41,6 +42,11 @@ class LevelScreen : public Window {
     float elapsed_time = 0;
 
     TopBar *top_bar;
+
+    Tile *generateTileFromId(int id, sf::Vector2f pos);
+
+    friend std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj);
+    friend std::ofstream &operator<<(std::ofstream &data, const LevelScreen &obj);
 
     void setup() override;
     void render() override;

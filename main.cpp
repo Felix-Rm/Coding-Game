@@ -14,14 +14,14 @@ int main() {
 
     //TitleScreen window{};
     //StageScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
-    SandboxScreen window{sf::VideoMode::getDesktopMode(), "Sandbox", sf::Style::Default};
+    //SandboxScreen window{sf::VideoMode::getDesktopMode(), "Sandbox", sf::Style::Default};
 
-    // std::string level_path = "_assets/stages/0/";
-    // LevelScreen window{
-    //     sf::VideoMode::getDesktopMode(),
-    //     "Level #",
-    //     sf::Style::Default,
-    //     0, level_path};
+    std::string level_path = "_assets/stages/0/";
+    LevelScreen window{
+        sf::VideoMode::getDesktopMode(),
+        "Level #",
+        sf::Style::Default,
+        0, level_path};
 
     while (window.run())
         ;

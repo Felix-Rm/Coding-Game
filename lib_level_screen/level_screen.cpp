@@ -12,57 +12,19 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     if (!level_info)
         throw std::runtime_error("could not open level info");
 
-    level_info >> this->size.x >> this->size.y;
+    level_info >> *this;
 
-    int level_height = this->size.y * Tile::tex_size.y;
-    int level_width = this->size.x * Tile::tex_size.x;
+    level_info.close();
 
-    this->scale = min(this->view_size.x / level_width, this->view_size.y / level_height);
-    this->origin.x = (this->view_size.x - (level_width * this->scale)) / 2;
-    this->origin.y = (this->view_size.y - (level_height * this->scale)) / 2;
-
-    for (size_t y = 0; y < this->size.y; y++) {
-        this->map.push_back(std::vector<Tile *>());
-        auto current_row = &this->map.back();
-
-        for (size_t x = 0; x < this->size.x; x++) {
-            int type;
-            sf::Vector2f pos = {(float)x * Tile::tex_size.x, (float)y * Tile::tex_size.y};
-            level_info >> type;
-
-            switch (type) {
-                case tile_types::AIR:
-                    current_row->push_back(new Tile(this, false, tile_types::AIR, pos));
-                    break;
-                case tile_types::FLOOR:
-                    current_row->push_back(new Tile(this, true, tile_types::FLOOR, pos));
-                    break;
-                case tile_types::WALL:
-                    current_row->push_back(new Tile(this, false, tile_types::WALL, pos));
-                    break;
-
-                default:
-                    printf("unknown tile type\n");
-                    break;
-            }
-        }
-    }
-
-    level_info >> num_bots;
-
-    for (int i = 0; i < num_bots; i++) {
-        int x, y;
-        level_info >> x >> y;
-        bots.push_back(new Bot(this, {(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
-    }
-
-    updatePosition();
+    // for (int i = 0; i < num_bots; i++) {
+    //     int x, y;
+    //     level_info >> x >> y;
+    //     bots.push_back(new Bot(this, {(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
+    // }
 
     addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
     addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
-
-    level_info.close();
 
     addEventHandler([](sf::Event &event, void *data) {
         LevelScreen *obj = (LevelScreen *)data;
@@ -86,6 +48,68 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
                     this, 1, sf::Event::KeyPressed);
 }
 
+std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
+    data >> obj.size.x >> obj.size.y;
+    obj.map.resize(obj.size.x);
+
+    int level_height = obj.size.y * Tile::tex_size.y;
+    int level_width = obj.size.x * Tile::tex_size.x;
+
+    obj.scale = min(obj.view_size.x / level_width, obj.view_size.y / level_height);
+    obj.origin.x = (obj.view_size.x - (level_width * obj.scale)) / 2;
+    obj.origin.y = (obj.view_size.y - (level_height * obj.scale)) / 2;
+
+    for (size_t x = 0; x < obj.size.x; x++) {
+        //obj.map[x] = std::vector<Tile *>();
+        obj.map[x].resize(obj.size.y);
+
+        for (size_t y = 0; y < obj.size.y; y++) {
+            int type;
+            sf::Vector2f pos = {(float)x * Tile::tex_size.x, (float)y * Tile::tex_size.y};
+            data >> type;
+            obj.map[x][y] = obj.generateTileFromId(type, pos);
+            data >> *obj.map[x][y];
+        }
+    }
+
+    obj.updatePosition();
+
+    return data;
+}
+
+std::ofstream &operator<<(std::ofstream &data, const LevelScreen &obj) {
+    data << obj.size.x << obj.size.y;
+
+    for (size_t x = 0; x < obj.size.x; x++) {
+        for (size_t y = 0; y < obj.size.y; y++) {
+            data << *obj.map[x][y];
+        }
+    }
+
+    return data;
+}
+
+Tile *LevelScreen::generateTileFromId(int id, sf::Vector2f pos) {
+    switch (id) {
+        case Tile::tile_type::AIR:
+            return new Tile(this, Tile::tile_type::AIR, pos);
+            break;
+        case Tile::tile_type::FLOOR:
+            return new Tile(this, Tile::tile_type::FLOOR, pos);
+            break;
+        case Tile::tile_type::WALL:
+            return new Tile(this, Tile::tile_type::WALL, pos);
+            break;
+        case Tile::tile_type::SPAWNER:
+            return new SpawnerTile(this, pos);
+            break;
+        default:
+            break;
+    }
+    throw std::runtime_error("unknown tile type\n");
+    return nullptr;
+}
+
 void LevelScreen::setup() {
     top_bar->updatePosition();
 }
@@ -93,9 +117,9 @@ void LevelScreen::setup() {
 void LevelScreen::render() {
     clear();
 
-    for (size_t y = 0; y < this->size.y; y++) {
-        for (size_t x = 0; x < this->size.x; x++) {
-            map[y][x]->render();
+    for (size_t x = 0; x < this->size.x; x++) {
+        for (size_t y = 0; y < this->size.y; y++) {
+            map[x][y]->render();
         }
     }
 
@@ -109,10 +133,10 @@ void LevelScreen::render() {
 }
 
 void LevelScreen::updatePosition() {
-    for (size_t y = 0; y < this->size.y; y++) {
-        for (size_t x = 0; x < this->size.x; x++) {
-            map[y][x]->setScale(this->scale);
-            map[y][x]->setPosition(this->origin.x + x * (Tile::tex_size.x * this->scale), this->origin.y + y * (Tile::tex_size.y * this->scale));
+    for (size_t x = 0; x < this->size.x; x++) {
+        for (size_t y = 0; y < this->size.y; y++) {
+            map[x][y]->setScale(this->scale);
+            map[x][y]->setPosition(this->origin.x + x * (Tile::tex_size.x * this->scale), this->origin.y + y * (Tile::tex_size.y * this->scale));
         }
     }
 

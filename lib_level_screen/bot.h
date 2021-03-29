@@ -20,8 +20,7 @@ class Bot : public Drawable {
         JUST_DONE
     };
 
-  
-    static std::string path;
+      static std::string path;
     static bool textures_loaded;
 
     static constexpr int num_textures = 1;
