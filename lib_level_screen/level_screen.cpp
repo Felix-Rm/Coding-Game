@@ -26,26 +26,26 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
     addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
 
-    addEventHandler([](sf::Event &event, void *data) {
-        LevelScreen *obj = (LevelScreen *)data;
+    // addEventHandler([](sf::Event &event, void *data) {
+    //     LevelScreen *obj = (LevelScreen *)data;
 
-        sf::Keyboard::Key key = event.key.code;
+    //     sf::Keyboard::Key key = event.key.code;
 
-        if (key == sf::Keyboard::D)
-            obj->bots[0]->rotate(Bot::option::clockwise);
+    //     if (key == sf::Keyboard::D)
+    //         obj->bots[0]->rotate(Bot::option::clockwise);
 
-        if (key == sf::Keyboard::A)
-            obj->bots[0]->rotate(Bot::option::counterclockwise);
+    //     if (key == sf::Keyboard::A)
+    //         obj->bots[0]->rotate(Bot::option::counterclockwise);
 
-        if (key == sf::Keyboard::W)
-            obj->bots[0]->drive(Bot::option::forward);
+    //     if (key == sf::Keyboard::W)
+    //         obj->bots[0]->drive(Bot::option::forward);
 
-        if (key == sf::Keyboard::S)
-            obj->bots[0]->drive(Bot::option::backward);
+    //     if (key == sf::Keyboard::S)
+    //         obj->bots[0]->drive(Bot::option::backward);
 
-        return true;
-    },
-                    this, 1, sf::Event::KeyPressed);
+    //     return true;
+    // },
+    //                 this, 1, sf::Event::KeyPressed);
 }
 
 std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
@@ -78,12 +78,13 @@ std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
 }
 
 std::ofstream &operator<<(std::ofstream &data, const LevelScreen &obj) {
-    data << obj.size.x << obj.size.y;
+    data << obj.size.x << ' ' << obj.size.y << '\n';
 
     for (size_t x = 0; x < obj.size.x; x++) {
         for (size_t y = 0; y < obj.size.y; y++) {
-            data << *obj.map[x][y];
+            data << *obj.map[x][y] << ' ';
         }
+        data << '\n';
     }
 
     return data;
@@ -160,7 +161,7 @@ bool LevelScreen::onScroll(sf::Event &event, void *data) {
     obj->origin.y -= mouse_pos_after.y - mouse_pos_now.y;
 
     obj->updatePosition();
-    return true;
+    return false;
 }
 
 bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
@@ -168,7 +169,7 @@ bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
 
     obj->mouse_pos = {(float)event.mouseMove.x, (float)event.mouseMove.y};
 
-    if (obj->mouse_down) {
+    if (obj->mouse_down[0]) {
         sf::Vector2f drag_dist = {event.mouseMove.x - obj->last_mouse_click_pos.x, event.mouseMove.y - obj->last_mouse_click_pos.y};
         obj->origin.x = obj->prev_origin.x + drag_dist.x;
         obj->origin.y = obj->prev_origin.y + drag_dist.y;
@@ -176,21 +177,21 @@ bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
         obj->updatePosition();
     }
 
-    return true;
+    return false;
 }
 
 bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
+    LevelScreen *obj = (LevelScreen *)data;
+
+    obj->mouse_down[event.mouseButton.button] = event.type == sf::Event::MouseButtonPressed;
+
     if (event.mouseButton.button != 0)
         return false;
 
-    LevelScreen *obj = (LevelScreen *)data;
-
     if (event.type == sf::Event::MouseButtonPressed) {
-        obj->mouse_down = true;
         obj->last_mouse_click_pos = {(float)event.mouseButton.x, (float)event.mouseButton.y};
         obj->prev_origin = obj->origin;
-    } else if (event.type == sf::Event::MouseButtonReleased) {
-        obj->mouse_down = false;
     }
+
     return true;
 }

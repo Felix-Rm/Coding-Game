@@ -18,6 +18,12 @@ class Bot;
 class TopBar;
 
 class LevelScreen : public Window {
+   public:
+    LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path);
+
+    friend Bot;
+    friend TopBar;
+
    protected:
     std::string path;
     sf::Vector2u size;
@@ -29,7 +35,7 @@ class LevelScreen : public Window {
     sf::Vector2f mouse_pos = {0, 0};
     sf::Vector2f last_mouse_click_pos = {0, 0};
     sf::Vector2f prev_origin = {0, 0};
-    bool mouse_down = false;
+    bool mouse_down[3] = {false};
 
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
@@ -50,16 +56,10 @@ class LevelScreen : public Window {
 
     void setup() override;
     void render() override;
-
     void updatePosition();
 
+   private:
     static bool onMouseMove(sf::Event &, void *);
     static bool onMouseButton(sf::Event &, void *);
     static bool onScroll(sf::Event &, void *);
-
-   public:
-    LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path);
-
-    friend Bot;
-    friend TopBar;
 };

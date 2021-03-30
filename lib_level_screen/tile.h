@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "lib_window/drawable.h"
+// #include "lib_level_editor_screen/level_editor_screen.h"
 
 class Tile : public Drawable {
    public:
@@ -50,11 +51,11 @@ class Tile : public Drawable {
 
     static void loadTextures();
 
-   private:
     static bool textures_loaded;
     static sf::Texture textures[tile_type::_COUNT];
     static bool type_drivable[tile_type::_COUNT];
 
+   private:
     const static std::string path;
 
     void loadBackground();

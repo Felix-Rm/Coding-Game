@@ -1,6 +1,7 @@
 #include "lib_window/window.h"
 #include "lib_title_screen/title_screen.h"
 #include "lib_level_screen/level_screen.h"
+#include "lib_level_editor_screen/level_editor_screen.h"
 #include "lib_sandbox_screen/sandbox_screen.h"
 #include "lib_window/style.h"
 
@@ -16,8 +17,15 @@ int main() {
     //StageScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
     //SandboxScreen window{sf::VideoMode::getDesktopMode(), "Sandbox", sf::Style::Default};
 
+    // std::string level_path = "_assets/stages/0/";
+    // LevelScreen window{
+    //     sf::VideoMode::getDesktopMode(),
+    //     "Level #",
+    //     sf::Style::Default,
+    //     0, level_path};
+
     std::string level_path = "_assets/stages/0/";
-    LevelScreen window{
+    LevelEditorScreen window{
         sf::VideoMode::getDesktopMode(),
         "Level #",
         sf::Style::Default,
