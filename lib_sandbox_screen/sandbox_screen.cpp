@@ -46,13 +46,20 @@ bool SandboxScreen::onEditToggle(sf::Event &event, void *data) {
 bool SandboxScreen::run_level(sf::Event &event, void *data) {
     auto *info = (std::pair<Stage *, int> *)data;
 
-    LevelScreen window{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
+    SandboxScreen *obj = (SandboxScreen *)&info->first->getWindow();
+    LevelScreen *window;
 
-    info->first->getWindow().setVisible(false);
-    while (window.run())
+    if (obj->edit_activated)
+        window = new LevelEditorScreen{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
+    else {
+        window = new LevelScreen{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
+        window->activateManualControlls();
+    }
+    obj->setVisible(false);
+    while (window->run())
         ;
 
-    info->first->getWindow().setVisible(true);
+    obj->setVisible(true);
     return true;
 }
 

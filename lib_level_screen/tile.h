@@ -1,10 +1,12 @@
 
 #pragma once
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
+
 #include "lib_window/drawable.h"
-// #include "lib_level_editor_screen/level_editor_screen.h"
+
+class LevelScreen;
 
 class Tile : public Drawable {
    public:
@@ -15,7 +17,7 @@ class Tile : public Drawable {
         SPAWNER,
         _COUNT
     };
-    Tile(Window* window, tile_type type, sf::Vector2f pos);
+    Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos);
 
     Tile(Tile&& other) : Drawable(other) {
         copyFrom(other);
@@ -41,6 +43,7 @@ class Tile : public Drawable {
     static sf::Vector2f tex_size;
 
     void setPosition(float x, float y) override;
+    void setTilePosition(unsigned int x, unsigned int y);
     void shiftPosition(float dx, float dy) override;
     void setScale(float s);
 
@@ -55,11 +58,15 @@ class Tile : public Drawable {
     static sf::Texture textures[tile_type::_COUNT];
     static bool type_drivable[tile_type::_COUNT];
 
-   private:
+   protected:
+    LevelScreen* lvl;
+
     const static std::string path;
 
     void loadBackground();
     void copyFrom(Tile& other);
+
+    sf::Vector2u tile_pos;
 
     sf::Sprite background;
     tile_type type;

@@ -10,12 +10,14 @@ bool Tile::type_drivable[tile_type::_COUNT] = {
     false,
     true};
 
-Tile::Tile(Window* window, tile_type type, sf::Vector2f pos) : Drawable(window, {pos.x, pos.y}, tex_size) {
+Tile::Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos) : Drawable((Window*)window, {pos.x, pos.y}, tex_size) {
     if (!textures_loaded)
         throw std::runtime_error("Textures have to be loaded before Tile can be constructed!");
 
+    this->lvl = window;
+    this->tile_pos = tile_pos;
     this->type = type;
-    this->drivable = type_drivable[(int)type];
+    this->drivable = type_drivable[type];
     loadBackground();
 }
 
@@ -55,6 +57,11 @@ void Tile::setPosition(float x, float y) {
     this->pos = {x, y};
     this->background.setPosition(this->pos);
 };
+
+void Tile::setTilePosition(unsigned int x, unsigned int y) {
+    tile_pos.x = x;
+    tile_pos.y = y;
+}
 
 void Tile::shiftPosition(float dx, float dy) {
     this->pos.x += dx;

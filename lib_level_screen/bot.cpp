@@ -5,7 +5,7 @@ bool Bot::textures_loaded = false;
 sf::Texture Bot::textures[Bot::num_textures];
 sf::Vector2f Bot::delta_tile_position_per_update = {1.0 / Bot::updates_per_movement, 1.0 / Bot::updates_per_movement};
 
-Bot::Bot(Window *window, sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream &data, LevelScreen *lvl) : Drawable(window, pos, Tile::tex_size) {
+Bot::Bot(LevelScreen *window, sf::Vector2f pos, sf::Vector2u tile_pos) : Drawable((Window *)window, pos, Tile::tex_size) {
     if (!textures_loaded)
         throw std::runtime_error("Textures have to be loaded before Bot can be constructed!");
 
@@ -15,10 +15,10 @@ Bot::Bot(Window *window, sf::Vector2f pos, sf::Vector2f tile_pos, std::ifstream 
     this->body.setOrigin(Tile::tex_size.x / 2, Tile::tex_size.y / 2);
     this->body.setPosition(this->pos);
 
-    this->tile_position = tile_pos;
-    this->target_position = tile_pos;
+    this->tile_position = {(float)tile_pos.x, (float)tile_pos.y};
+    this->target_position = {(float)tile_pos.x, (float)tile_pos.y};
 
-    this->level = lvl;
+    this->level = window;
 }
 
 void Bot::updatePosition() {
@@ -32,6 +32,13 @@ void Bot::setPosition(float x, float y) {
 
     this->body.setPosition(this->pos);
 };
+
+void Bot::setTilePosition(unsigned int x, unsigned int y) {
+    this->tile_position = {x, y};
+    this->target_position = {x, y};
+
+    this->updatePosition();
+}
 
 void Bot::shiftPosition(float dx, float dy) {
     this->pos.x += dx;
@@ -147,6 +154,7 @@ bool Bot::drive(option dir) {
         return false;
 
     sf::Vector2i delta_pos;
+
     switch ((int)target_rotation) {
         case 0:
             delta_pos = {0, -1};
@@ -184,14 +192,23 @@ bool Bot::drive(option dir) {
             break;
     }
 
-    if (dir == forward) {
-        target_position.x += delta_pos.x;
-        target_position.y += delta_pos.y;
+    if (dir == backward) {
+        delta_pos.x *= -1;
+        delta_pos.y *= -1;
     }
 
-    if (dir == backward) {
+    target_position.x += delta_pos.x;
+    target_position.y += delta_pos.y;
+
+    bool target_ok = target_position.x >= 0 && target_position.y >= 0 && target_position.x <= level->size.x - 1 && target_position.y <= level->size.y - 1;
+    if (target_ok) {
+        target_ok &= level->map[target_position.x][target_position.y]->isDrivable();
+    }
+
+    if (!target_ok) {
         target_position.x -= delta_pos.x;
         target_position.y -= delta_pos.y;
+        return false;
     }
 
     movement_complete = MOVING;

@@ -1,11 +1,13 @@
 #pragma once
 
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <SFML/Window.hpp>
 #include <fstream>
+#include <iostream>
 #include <unordered_map>
 
+#include "lib_level_editor_screen/level_editor_screen.h"
+#include "lib_level_screen/level_screen.h"
 #include "lib_selection_screen/selection_screen.h"
 
 class SandboxScreen : public SelectionScreen {

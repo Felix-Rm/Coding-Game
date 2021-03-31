@@ -25,27 +25,6 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
     addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
-
-    // addEventHandler([](sf::Event &event, void *data) {
-    //     LevelScreen *obj = (LevelScreen *)data;
-
-    //     sf::Keyboard::Key key = event.key.code;
-
-    //     if (key == sf::Keyboard::D)
-    //         obj->bots[0]->rotate(Bot::option::clockwise);
-
-    //     if (key == sf::Keyboard::A)
-    //         obj->bots[0]->rotate(Bot::option::counterclockwise);
-
-    //     if (key == sf::Keyboard::W)
-    //         obj->bots[0]->drive(Bot::option::forward);
-
-    //     if (key == sf::Keyboard::S)
-    //         obj->bots[0]->drive(Bot::option::backward);
-
-    //     return true;
-    // },
-    //                 this, 1, sf::Event::KeyPressed);
 }
 
 std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
@@ -67,7 +46,7 @@ std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
             int type;
             sf::Vector2f pos = {(float)x * Tile::tex_size.x, (float)y * Tile::tex_size.y};
             data >> type;
-            obj.map[x][y] = obj.generateTileFromId(type, pos);
+            obj.map[x][y] = obj.generateTileFromId(type, pos, {(unsigned int)x, (unsigned int)y});
             data >> *obj.map[x][y];
         }
     }
@@ -90,25 +69,49 @@ std::ofstream &operator<<(std::ofstream &data, const LevelScreen &obj) {
     return data;
 }
 
-Tile *LevelScreen::generateTileFromId(int id, sf::Vector2f pos) {
+Tile *LevelScreen::generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u tile_pos) {
     switch (id) {
         case Tile::tile_type::AIR:
-            return new Tile(this, Tile::tile_type::AIR, pos);
+            return new Tile(this, Tile::tile_type::AIR, pos, tile_pos);
             break;
         case Tile::tile_type::FLOOR:
-            return new Tile(this, Tile::tile_type::FLOOR, pos);
+            return new Tile(this, Tile::tile_type::FLOOR, pos, tile_pos);
             break;
         case Tile::tile_type::WALL:
-            return new Tile(this, Tile::tile_type::WALL, pos);
+            return new Tile(this, Tile::tile_type::WALL, pos, tile_pos);
             break;
         case Tile::tile_type::SPAWNER:
-            return new SpawnerTile(this, pos);
+            return new SpawnerTile(this, pos, tile_pos);
             break;
         default:
             break;
     }
     throw std::runtime_error("unknown tile type\n");
     return nullptr;
+}
+
+void LevelScreen::activateManualControlls() {
+    addEventHandler([](sf::Event &event, void *data) {
+        LevelScreen *obj = (LevelScreen *)data;
+
+        sf::Keyboard::Key key = event.key.code;
+
+        for (auto &bot : obj->bots) {
+            if (key == sf::Keyboard::D)
+                bot->rotate(Bot::option::clockwise);
+
+            if (key == sf::Keyboard::A)
+                bot->rotate(Bot::option::counterclockwise);
+
+            if (key == sf::Keyboard::W)
+                bot->drive(Bot::option::forward);
+
+            if (key == sf::Keyboard::S)
+                bot->drive(Bot::option::backward);
+        }
+        return true;
+    },
+                    this, 1, sf::Event::KeyPressed);
 }
 
 void LevelScreen::setup() {
@@ -124,11 +127,11 @@ void LevelScreen::render() {
         }
     }
 
-    for (int i = 0; i < num_bots; i++)
-        bots[i]->update();
+    for (auto &bot : bots)
+        bot->update();
 
-    for (int i = 0; i < num_bots; i++)
-        bots[i]->render();
+    for (auto &bot : bots)
+        bot->render();
 
     top_bar->render();
 }
@@ -138,12 +141,12 @@ void LevelScreen::updatePosition() {
         for (size_t y = 0; y < this->size.y; y++) {
             map[x][y]->setScale(this->scale);
             map[x][y]->setPosition(this->origin.x + x * (Tile::tex_size.x * this->scale), this->origin.y + y * (Tile::tex_size.y * this->scale));
+            map[x][y]->setTilePosition(x, y);
         }
     }
 
-    for (int i = 0; i < num_bots; i++) {
-        bots[i]->updatePosition();
-    }
+    for (auto &bot : bots)
+        bot->updatePosition();
 }
 
 bool LevelScreen::onScroll(sf::Event &event, void *data) {

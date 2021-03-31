@@ -23,6 +23,8 @@ class LevelEditorScreen : public LevelScreen {
     void updateOverlay();
     bool placeTileAtMousePos();
 
+    void save();
+
     static bool onMouseButton(sf::Event& event, void* data);
     static bool onMouseMove(sf::Event& event, void* data);
     static bool onKeyEvent(sf::Event& event, void* data);

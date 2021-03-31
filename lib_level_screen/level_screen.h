@@ -1,33 +1,36 @@
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <fstream>
-
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include "../lib_window/window.h"
-#include "../lib_window/style.h"
+#include <SFML/Window.hpp>
+#include <fstream>
+#include <iostream>
+#include <string>
 
-#include "top_bar.h"
-#include "tile.h"
-#include "spawner_tile.h"
+#include "../lib_window/style.h"
+#include "../lib_window/window.h"
 #include "bot.h"
+#include "spawner_tile.h"
+#include "tile.h"
+#include "top_bar.h"
 
 class Bot;
 class TopBar;
+class Tile;
+class SpawnerTile;
 
 class LevelScreen : public Window {
    public:
     LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path);
 
+    void activateManualControlls();
+
+    friend SpawnerTile;
     friend Bot;
     friend TopBar;
 
    protected:
     std::string path;
     sf::Vector2u size;
-    int num_bots = 0;
 
     float scale = 1;
     sf::Vector2f origin = {0, 0};
@@ -49,7 +52,7 @@ class LevelScreen : public Window {
 
     TopBar *top_bar;
 
-    Tile *generateTileFromId(int id, sf::Vector2f pos);
+    Tile *generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u tile_pos);
 
     friend std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj);
     friend std::ofstream &operator<<(std::ofstream &data, const LevelScreen &obj);

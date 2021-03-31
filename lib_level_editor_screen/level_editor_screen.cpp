@@ -25,9 +25,7 @@ bool LevelEditorScreen::onMouseButton(sf::Event& event, void* data) {
     LevelEditorScreen* obj = (LevelEditorScreen*)data;
 
     if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == 1) {
-        std::ofstream file(obj->path + "level.info");
-        file << *obj;
-        file.close();
+        obj->save();
         return true;
     }
 
@@ -43,7 +41,7 @@ bool LevelEditorScreen::onMouseMove(sf::Event& event, void* data) {
     if (obj->mouse_down[1])
         obj->placeTileAtMousePos();
 
-    if (event.type == sf::Event::MouseWheelScrolled || event.type == sf::Event::MouseMoved)
+    if (event.type == sf::Event::MouseWheelMoved || event.type == sf::Event::MouseMoved)
         obj->updateOverlay();
     return true;
 }
@@ -52,15 +50,93 @@ bool LevelEditorScreen::onKeyEvent(sf::Event& event, void* data) {
     LevelEditorScreen* obj = (LevelEditorScreen*)data;
 
     sf::Keyboard::Key key = event.key.code;
+    bool modified_map = false;
 
-    if (key == sf::Keyboard::W && obj->tile_type < Tile::tile_type::_COUNT - 1)
+    if (key == sf::Keyboard::W && obj->tile_type < Tile::tile_type::_COUNT - 1) {
         obj->tile_type++;
-    if (key == sf::Keyboard::S && obj->tile_type > 0)
+    } else if (key == sf::Keyboard::S && obj->tile_type > 0) {
         obj->tile_type--;
+    } else if (key == sf::Keyboard::I) {
+        modified_map = true;
+        if (event.key.shift) {
+            if (obj->map[0].size() <= 1) return false;
+            obj->size.y--;
+            for (size_t x = 0; x < obj->size.x; x++) {
+                delete obj->map[x][0];
+                obj->map[x].erase(obj->map[x].begin());
+            }
+        } else {
+            obj->size.y++;
+            for (size_t x = 0; x < obj->size.x; x++) {
+                obj->map[x].insert(obj->map[x].begin(), new Tile(obj, Tile::tile_type::AIR, {0, 0}, {0, 0}));
+            }
+        }
+    } else if (key == sf::Keyboard::K) {
+        modified_map = true;
+        if (event.key.shift) {
+            if (obj->map[0].size() <= 1) return false;
+            obj->size.y--;
+            for (size_t x = 0; x < obj->size.x; x++) {
+                delete obj->map[x][obj->size.y];
+                obj->map[x].pop_back();
+            }
+
+        } else {
+            obj->size.y++;
+            for (size_t x = 0; x < obj->size.x; x++) {
+                obj->map[x].insert(obj->map[x].end(), new Tile(obj, Tile::tile_type::AIR, {0, 0}, {0, 0}));
+            }
+        }
+    } else if (key == sf::Keyboard::J) {
+        modified_map = true;
+        if (event.key.shift) {
+            if (obj->map.size() <= 1) return false;
+            obj->size.x--;
+            for (size_t y = 0; y < obj->size.y; y++) {
+                delete obj->map[0][y];
+            }
+            obj->map.erase(obj->map.begin());
+
+        } else {
+            obj->size.x++;
+            obj->map.insert(obj->map.begin(), std::vector<Tile*>());
+            for (size_t y = 0; y < obj->size.y; y++) {
+                obj->map[0].push_back(new Tile(obj, Tile::tile_type::AIR, {0, 0}, {0, 0}));
+            }
+        }
+    } else if (key == sf::Keyboard::L) {
+        modified_map = true;
+        if (event.key.shift) {
+            if (obj->map.size() <= 1) return false;
+            obj->size.x--;
+            for (size_t y = 0; y < obj->size.y; y++) {
+                delete obj->map[obj->size.x][y];
+            }
+            obj->map.pop_back();
+
+        } else {
+            obj->map.push_back(std::vector<Tile*>());
+            for (size_t y = 0; y < obj->size.y; y++) {
+                obj->map[obj->size.x].push_back(new Tile(obj, Tile::tile_type::AIR, {0, 0}, {0, 0}));
+            }
+            obj->size.x++;
+        }
+    }
 
     obj->cursor = sf::Sprite(Tile::textures[obj->tile_type]);
     obj->updateOverlay();
+
+    if (modified_map) {
+        obj->updatePosition();
+        obj->save();
+    }
     return true;
+}
+
+void LevelEditorScreen::save() {
+    std::ofstream file(this->path + "level.info");
+    file << *this;
+    file.close();
 }
 
 bool LevelEditorScreen::placeTileAtMousePos() {
@@ -74,7 +150,7 @@ bool LevelEditorScreen::placeTileAtMousePos() {
         return false;
 
     delete this->map[tile_pos_x][tile_pos_y];
-    this->map[tile_pos_x][tile_pos_y] = this->generateTileFromId(this->tile_type, {0, 0});
+    this->map[tile_pos_x][tile_pos_y] = this->generateTileFromId(this->tile_type, {0, 0}, {tile_pos_x, tile_pos_y});
     this->updatePosition();
 
     last_tile_placement.tile_pos_x = tile_pos_x;
