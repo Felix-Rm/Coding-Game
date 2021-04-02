@@ -8,6 +8,7 @@ bool Tile::type_drivable[tile_type::_COUNT] = {
     false,
     true,
     false,
+    true,
     true};
 
 Tile::Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos) : Drawable((Window*)window, {pos.x, pos.y}, tex_size) {

@@ -20,6 +20,13 @@ class Bot : public Drawable {
         backward
     };
 
+    enum movement_state {
+
+        IDLE,
+        MOVING,
+        JUST_DONE
+    };
+
     Bot(LevelScreen *window, sf::Vector2f pos, sf::Vector2u tile_pos);
     void setPosition(float x, float y) override;
     void setTilePosition(unsigned int x, unsigned int y);
@@ -35,16 +42,12 @@ class Bot : public Drawable {
 
     void update();
 
+    sf::Vector2u getTilePosition() const { return (sf::Vector2u)tile_position; };
+    movement_state getState() const { return state; };
+
     static void loadTextures();
 
    private:
-    enum movement_state {
-
-        DONE,
-        MOVING,
-        JUST_DONE
-    };
-
     static std::string path;
     static bool textures_loaded;
 
@@ -61,7 +64,7 @@ class Bot : public Drawable {
 
     sf::Sprite body;
 
-    movement_state movement_complete = DONE;
+    movement_state state = IDLE;
     long time_for_movement;
 
     long t = 0;

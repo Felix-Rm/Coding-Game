@@ -64,13 +64,13 @@ void Bot::render() {
 void Bot::update() {
     int repeats = window->mspf / time_for_movement * updates_per_movement;
 
-    if (movement_complete == MOVING) {
+    if (state == MOVING) {
         t += repeats;
     }
 
-    for (int i = 0; i < repeats && movement_complete != DONE; i++) {
-        if (movement_complete == MOVING)
-            movement_complete = JUST_DONE;
+    for (int i = 0; i < repeats && state != IDLE; i++) {
+        if (state == MOVING)
+            state = JUST_DONE;
 
         if (abs(current_rotation - target_rotation) > delta_rotation_per_update) {
             float_mod(target_rotation, 360);
@@ -95,27 +95,27 @@ void Bot::update() {
             //printf("current: %f target: %f move: %f\n", current_rotation, target_rotation, chosen_dir);
             current_rotation += chosen_dir > 0 ? delta_rotation_per_update : -delta_rotation_per_update;
 
-            movement_complete = MOVING;
+            state = MOVING;
         }
 
         float delta_x = target_position.x - tile_position.x;
         if (abs(delta_x) > delta_tile_position_per_update.x / 2) {
             tile_position.x += delta_x > 0 ? delta_tile_position_per_update.x : -delta_tile_position_per_update.x;
-            movement_complete = MOVING;
+            state = MOVING;
         }
 
         float delta_y = target_position.y - tile_position.y;
         if (abs(delta_y) > delta_tile_position_per_update.y / 2) {
             tile_position.y += delta_y > 0 ? delta_tile_position_per_update.y : -delta_tile_position_per_update.y;
-            movement_complete = MOVING;
+            state = MOVING;
         }
 
-        if (movement_complete == MOVING) {
+        if (state == MOVING) {
             updatePosition();
             this->body.setRotation(current_rotation);
         }
 
-        if (movement_complete == JUST_DONE) {
+        if (state == JUST_DONE) {
             current_rotation = target_rotation;
 
             tile_position.x = target_position.x;
@@ -127,13 +127,13 @@ void Bot::update() {
             this->body.setRotation(current_rotation);
 
             level->top_bar->update();
-            movement_complete = DONE;
+            state = IDLE;
         }
     }
 }
 
 bool Bot::rotate(option dir) {
-    if (movement_complete != DONE)
+    if (state != IDLE)
         return false;
 
     if (dir == clockwise)
@@ -141,7 +141,7 @@ bool Bot::rotate(option dir) {
     if (dir == counterclockwise)
         target_rotation -= 45;
 
-    movement_complete = MOVING;
+    state = MOVING;
 
     time_for_movement = 0.5 * ((LevelScreen *)window)->ms_per_unit_movement;
     level->elapsed_time += 0.5;
@@ -150,7 +150,7 @@ bool Bot::rotate(option dir) {
 }
 
 bool Bot::drive(option dir) {
-    if (movement_complete != DONE)
+    if (state != IDLE)
         return false;
 
     sf::Vector2i delta_pos;
@@ -211,7 +211,7 @@ bool Bot::drive(option dir) {
         return false;
     }
 
-    movement_complete = MOVING;
+    state = MOVING;
 
     float length = (int)current_rotation % 90 == 0 ? 1 : 1.5;
     time_for_movement = length * ((LevelScreen *)window)->ms_per_unit_movement;

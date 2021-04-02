@@ -15,6 +15,7 @@ class Tile : public Drawable {
         FLOOR,
         WALL,
         SPAWNER,
+        FINISH,
         _COUNT
     };
     Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos);

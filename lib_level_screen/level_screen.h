@@ -6,17 +6,22 @@
 #include <iostream>
 #include <string>
 
-#include "../lib_window/style.h"
-#include "../lib_window/window.h"
 #include "bot.h"
+#include "finish_tile.h"
+#include "lib_window/dialog.h"
+#include "lib_window/style.h"
+#include "lib_window/text.h"
+#include "lib_window/window.h"
 #include "spawner_tile.h"
 #include "tile.h"
 #include "top_bar.h"
+#include "win_condition.h"
 
 class Bot;
 class TopBar;
 class Tile;
 class SpawnerTile;
+class FinishTile;
 
 class LevelScreen : public Window {
    public:
@@ -25,6 +30,7 @@ class LevelScreen : public Window {
     void activateManualControlls();
 
     friend SpawnerTile;
+    friend FinishTile;
     friend Bot;
     friend TopBar;
 
@@ -42,6 +48,7 @@ class LevelScreen : public Window {
 
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;
+    std::vector<WinCondition *> win_conditions;
 
     static constexpr long original_ms_per_unit_movement = 1000;
     int movement_multiplyer = 1;
@@ -51,6 +58,7 @@ class LevelScreen : public Window {
     float elapsed_time = 0;
 
     TopBar *top_bar;
+    Dialog *level_complete_dialog = nullptr;
 
     Tile *generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u tile_pos);
 

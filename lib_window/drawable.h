@@ -43,8 +43,14 @@ class Drawable {
         return sf::FloatRect({0, 0}, size);
     }
 
-    virtual void setPosition(float x, float y) = 0;
-    virtual void shiftPosition(float dx, float dy) = 0;
+    virtual void setPosition(float x, float y) {
+        pos.x = x;
+        pos.y = y;
+    };
+    virtual void shiftPosition(float dx, float dy) {
+        pos.x += dx;
+        pos.y += dy;
+    };
 
     virtual void render() = 0;
 

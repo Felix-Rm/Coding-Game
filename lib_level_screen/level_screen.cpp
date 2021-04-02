@@ -83,6 +83,9 @@ Tile *LevelScreen::generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u til
         case Tile::tile_type::SPAWNER:
             return new SpawnerTile(this, pos, tile_pos);
             break;
+        case Tile::tile_type::FINISH:
+            return new FinishTile(this, pos, tile_pos);
+            break;
         default:
             break;
     }
@@ -127,6 +130,15 @@ void LevelScreen::render() {
         }
     }
 
+    bool level_complete = win_conditions.size() > 0;
+    for (auto &condition : win_conditions) {
+        condition->update();
+        if (!condition->isMet()) {
+            level_complete = false;
+            break;
+        }
+    }
+
     for (auto &bot : bots)
         bot->update();
 
@@ -134,6 +146,18 @@ void LevelScreen::render() {
         bot->render();
 
     top_bar->render();
+
+    if (level_complete) {
+        if (!level_complete_dialog) {
+            sf::Vector2f dialog_size = {800, 500};
+            sf::Vector2f dialog_pos = {(view_size.x - dialog_size.x) / 2, (view_size.y - dialog_size.y) / 2};
+            level_complete_dialog = new Dialog(this, dialog_pos, dialog_size, 4, GameStyle::DARK_GRAY);
+
+            level_complete_dialog->addText("Level complete!!!", {0, 0}, 30, GameStyle::GOLD);
+        }
+
+        level_complete_dialog->render();
+    }
 }
 
 void LevelScreen::updatePosition() {
