@@ -1,14 +1,13 @@
 #pragma once
 
-#include "lib_window/window.h"
-#include "lib_window/drawable.h"
-#include "lib_window/text_button.h"
-#include "lib_window/style.h"
-
-#include "lib_level_screen/level_screen.h"
-
-#include <iostream>
 #include <fstream>
+#include <iostream>
+
+#include "../lib_level_screen/level_screen.h"
+#include "../lib_window/drawable.h"
+#include "../lib_window/style.h"
+#include "../lib_window/text_button.h"
+#include "../lib_window/window.h"
 
 class Stage : public Drawable {
    private:

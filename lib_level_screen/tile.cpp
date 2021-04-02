@@ -9,6 +9,7 @@ bool Tile::type_drivable[tile_type::_COUNT] = {
     true,
     false,
     true,
+    true,
     true};
 
 Tile::Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos) : Drawable((Window*)window, {pos.x, pos.y}, tex_size) {
@@ -37,7 +38,8 @@ void Tile::loadTextures() {
     }
 
     for (int i = 0; i < tile_type::_COUNT; i++) {
-        textures[i].loadFromFile(path + std::to_string(i) + ".png");
+        if (!textures[i].loadFromFile(path + std::to_string(i) + ".png"))
+            throw std::runtime_error("Failed to load tile");
     }
 
     tex_size = (sf::Vector2f)textures[0].getSize();
@@ -72,6 +74,7 @@ void Tile::shiftPosition(float dx, float dy) {
 };
 
 void Tile::setScale(float s) {
+    Drawable::setScale(s);
     this->background.setScale(s, s);
 }
 

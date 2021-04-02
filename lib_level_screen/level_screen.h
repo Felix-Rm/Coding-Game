@@ -6,12 +6,13 @@
 #include <iostream>
 #include <string>
 
+#include "../lib_window/dialog.h"
+#include "../lib_window/style.h"
+#include "../lib_window/text.h"
+#include "../lib_window/window.h"
+#include "bonus_tile.h"
 #include "bot.h"
 #include "finish_tile.h"
-#include "lib_window/dialog.h"
-#include "lib_window/style.h"
-#include "lib_window/text.h"
-#include "lib_window/window.h"
 #include "spawner_tile.h"
 #include "tile.h"
 #include "top_bar.h"
@@ -22,6 +23,7 @@ class TopBar;
 class Tile;
 class SpawnerTile;
 class FinishTile;
+class BonusTile;
 
 class LevelScreen : public Window {
    public:
@@ -31,6 +33,7 @@ class LevelScreen : public Window {
 
     friend SpawnerTile;
     friend FinishTile;
+    friend BonusTile;
     friend Bot;
     friend TopBar;
 
@@ -50,8 +53,10 @@ class LevelScreen : public Window {
     std::vector<Bot *> bots;
     std::vector<WinCondition *> win_conditions;
 
+    bool boni_collected;
+
     static constexpr long original_ms_per_unit_movement = 1000;
-    int movement_multiplyer = 1;
+    int movement_multiplyer = 2;
 
     long ms_per_unit_movement;
 
@@ -70,6 +75,12 @@ class LevelScreen : public Window {
     void updatePosition();
 
    private:
+    static sf::Texture star_textures[2][3];
+    static bool textures_loaded;
+
+    void loadTextures();
+
+  
     static bool onMouseMove(sf::Event &, void *);
     static bool onMouseButton(sf::Event &, void *);
     static bool onScroll(sf::Event &, void *);

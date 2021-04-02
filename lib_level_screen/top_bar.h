@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "lib_window/image_button.h"
-#include "lib_window/text_button.h"
-#include "lib_window/drawable.h"
-#include "lib_window/style.h"
+#include "../lib_window/drawable.h"
+#include "../lib_window/image_button.h"
+#include "../lib_window/style.h"
+#include "../lib_window/text_button.h"
 #include "level_screen.h"
 
 class LevelScreen;

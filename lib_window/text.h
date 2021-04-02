@@ -4,16 +4,13 @@
 
 class Text : public Drawable {
    public:
-    Text();
+    Text(){};
 
     Text(Window* window, sf::Vector2f pos, sf::Vector2f size, std::string text, int text_size, sf::Color color)
-        : Drawable(window, pos, size),
-          text(text),
-          color(color),
-          text_size(text_size) {
-        this->text_element = sf::Text(this->text, GameStyle::game_font, this->text_size);
+        : Drawable(window, pos, size) {
+        this->text_element = sf::Text(text, GameStyle::game_font, text_size);
         this->text_element.setPosition(this->pos);
-        this->text_element.setFillColor(this->color);
+        this->text_element.setFillColor(color);
     }
 
     Text(Text&& other) : Drawable(other) {
@@ -31,6 +28,11 @@ class Text : public Drawable {
     }
     ~Text(){};
 
+    void center() {
+        auto bounds = this->text_element.getGlobalBounds();
+        this->text_element.setPosition(this->pos.x + (this->size.x - bounds.width) / 2, this->pos.y);
+    }
+
     void render() override {
         window->draw(this->text_element);
     }
@@ -47,8 +49,4 @@ class Text : public Drawable {
 
    private:
     sf::Text text_element;
-
-    std::string text;
-    sf::Color color;
-    int text_size;
 };

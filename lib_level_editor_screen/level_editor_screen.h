@@ -1,7 +1,7 @@
 #pragma once
 
-#include "lib_level_screen/level_screen.h"
-#include "lib_level_screen/tile.h"
+#include "../lib_level_screen/level_screen.h"
+#include "../lib_level_screen/tile.h"
 
 class LevelEditorScreen : public LevelScreen {
    private:

@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
+#include "../lib_helpers/helpers.h"
+#include "../lib_window/drawable.h"
 #include "level_screen.h"
-#include "lib_helpers/helpers.h"
-#include "lib_window/drawable.h"
 #include "tile.h"
 
 class LevelScreen;

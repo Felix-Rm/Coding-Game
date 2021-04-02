@@ -1,6 +1,12 @@
 #include "level_screen.h"
 
+sf::Texture LevelScreen::star_textures[2][3];
+bool LevelScreen::textures_loaded = false;
+
 LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(video_mode, title, style) {
+    if (!textures_loaded)
+        loadTextures();
+
     Tile::loadTextures();
     Bot::loadTextures();
 
@@ -86,6 +92,9 @@ Tile *LevelScreen::generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u til
         case Tile::tile_type::FINISH:
             return new FinishTile(this, pos, tile_pos);
             break;
+        case Tile::tile_type::BONUS:
+            return new BonusTile(this, pos, tile_pos);
+            break;
         default:
             break;
     }
@@ -123,6 +132,13 @@ void LevelScreen::setup() {
 
 void LevelScreen::render() {
     clear();
+    boni_collected = true;
+
+    for (size_t x = 0; x < this->size.x; x++) {
+        for (size_t y = 0; y < this->size.y; y++) {
+            map[x][y]->update();
+        }
+    }
 
     for (size_t x = 0; x < this->size.x; x++) {
         for (size_t y = 0; y < this->size.y; y++) {
@@ -132,7 +148,6 @@ void LevelScreen::render() {
 
     bool level_complete = win_conditions.size() > 0;
     for (auto &condition : win_conditions) {
-        condition->update();
         if (!condition->isMet()) {
             level_complete = false;
             break;
@@ -147,13 +162,27 @@ void LevelScreen::render() {
 
     top_bar->render();
 
+    bool energy_limit = elapsed_time < 10;
+
     if (level_complete) {
         if (!level_complete_dialog) {
+            sf::Vector2f star_size = {200, 200};
             sf::Vector2f dialog_size = {800, 500};
             sf::Vector2f dialog_pos = {(view_size.x - dialog_size.x) / 2, (view_size.y - dialog_size.y) / 2};
             level_complete_dialog = new Dialog(this, dialog_pos, dialog_size, 4, GameStyle::DARK_GRAY);
 
-            level_complete_dialog->addText("Level complete!!!", {0, 0}, 30, GameStyle::GOLD);
+            level_complete_dialog->addText("Level geschafft!", {0, 20}, 40, GameStyle::GOLD, true);
+
+            float padding = (dialog_size.x - star_size.x * 3) / 4;
+            sf::Vector2f star_pos = {padding, dialog_size.y - star_size.y - padding};
+
+            level_complete_dialog->addImage(&(star_textures[1][0]), star_pos, star_size);
+            star_pos.x += padding + star_size.x;
+
+            level_complete_dialog->addImage(&(star_textures[energy_limit][1]), star_pos, star_size);
+            star_pos.x += padding + star_size.x;
+
+            level_complete_dialog->addImage(&(star_textures[boni_collected][2]), star_pos, star_size);
         }
 
         level_complete_dialog->render();
@@ -221,4 +250,12 @@ bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
     }
 
     return true;
+}
+
+void LevelScreen::loadTextures() {
+    for (int i = 0; i < 3; i++) {
+        star_textures[0][i].loadFromFile("_assets/textures/stars/" + std::to_string(i) + "sw.png");
+        star_textures[1][i].loadFromFile("_assets/textures/stars/" + std::to_string(i) + ".png");
+    }
+    textures_loaded = true;
 }

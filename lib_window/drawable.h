@@ -8,32 +8,39 @@ class Drawable {
    protected:
     sf::Vector2f pos;
     sf::Vector2f size;
+    sf::Vector2f orig_size;
 
     Window* window;
 
    public:
+    Drawable(){};
+
     Drawable(Window* window, sf::Vector2f pos, sf::Vector2f size) {
         this->window = window;
         this->pos = pos;
-        this->size = size;
+        this->orig_size = size;
+        this->size = this->orig_size;
     }
 
     Drawable(Drawable&& other) {
         pos = other.pos;
         size = other.size;
         window = other.window;
+        orig_size = other.orig_size;
     }
 
     Drawable(Drawable& other) {
         pos = other.pos;
         size = other.size;
         window = other.window;
+        orig_size = other.orig_size;
     }
 
     Drawable& operator=(Drawable&& other) {
         window = other.window;
         pos = other.pos;
         size = other.size;
+        orig_size = other.orig_size;
         return *this;
     }
 
@@ -51,6 +58,11 @@ class Drawable {
         pos.x += dx;
         pos.y += dy;
     };
+
+    virtual void setScale(float s) {
+        this->size.x = orig_size.x * s;
+        this->size.y = orig_size.y * s;
+    }
 
     virtual void render() = 0;
 

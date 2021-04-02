@@ -1,11 +1,11 @@
 #pragma once
 
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <vector>
+#include <SFML/Window.hpp>
 #include <cstdarg>
+#include <vector>
 
-#include "lib_helpers/helpers.h"
+#include "../lib_helpers/helpers.h"
 #include "style.h"
 
 class Window : public sf::RenderWindow {

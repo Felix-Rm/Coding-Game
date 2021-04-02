@@ -2,8 +2,8 @@
 
 #include <iostream>
 
+#include "../lib_level_screen/level_screen.h"
 #include "bot.h"
-#include "lib_level_screen/level_screen.h"
 #include "tile.h"
 #include "win_condition.h"
 

@@ -1,15 +1,14 @@
 #pragma once
 
-#include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <SFML/Window.hpp>
 #include <fstream>
+#include <iostream>
 #include <unordered_map>
 
-#include "lib_window/window.h"
-#include "lib_window/text_button.h"
-#include "lib_window/style.h"
-
+#include "../lib_window/style.h"
+#include "../lib_window/text_button.h"
+#include "../lib_window/window.h"
 #include "stage.h"
 
 class SelectionScreen : public Window {

@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "lib_window/drawable.h"
+#include "../lib_window/drawable.h"
 
 class LevelScreen;
 
@@ -16,6 +16,7 @@ class Tile : public Drawable {
         WALL,
         SPAWNER,
         FINISH,
+        BONUS,
         _COUNT
     };
     Tile(LevelScreen* window, tile_type type, sf::Vector2f pos, sf::Vector2u tile_pos);
@@ -52,6 +53,7 @@ class Tile : public Drawable {
     bool isDrivable() { return drivable; };
 
     void render() override;
+    virtual void update(){};
 
     static void loadTextures();
 
