@@ -2,7 +2,7 @@
 
 SandboxScreen::SandboxScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : SelectionScreen(video_mode, title, style) {
     this->stage_path = "_user/stages/";
-    this->onOpenLevel = SandboxScreen::run_level;
+    this->onCreateLevel = run_level;
 
     std::ifstream stages_info("_user/stages.info");
     if (!stages_info)
@@ -44,22 +44,17 @@ bool SandboxScreen::onEditToggle(sf::Event &event, void *data) {
 }
 
 bool SandboxScreen::run_level(sf::Event &event, void *data) {
-    auto *info = (std::pair<Stage *, int> *)data;
-
-    SandboxScreen *obj = (SandboxScreen *)&info->first->getWindow();
-    LevelScreen *window;
+    Stage::level_creation_data *creation_data = (Stage::level_creation_data *)data;
+    SandboxScreen *obj = (SandboxScreen *)creation_data->selection_window;
 
     if (obj->edit_activated)
-        window = new LevelEditorScreen{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
+        *(creation_data->level_window) = new LevelEditorScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
     else {
-        window = new LevelScreen{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
-        window->activateManualControlls();
-    }
-    obj->setVisible(false);
-    while (window->run())
-        ;
+        *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
 
-    obj->setVisible(true);
+        // don't look at this
+        (*((LevelScreen **)creation_data->level_window))->activateManualControlls();
+    }
     return true;
 }
 

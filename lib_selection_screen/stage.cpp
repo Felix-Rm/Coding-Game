@@ -2,6 +2,7 @@
 
 Stage::Stage(Window *window, std::string path, int stage_number, float scale, Window::event_handler_fnk_t event_handler) : Drawable(window, {0, 0}, (sf::Vector2f)window->getSize()) {
     this->path = path + std::to_string(stage_number) + '/';
+    this->level_creation_provider = event_handler;
 
     printf("%s\n", this->path.c_str());
 
@@ -44,7 +45,7 @@ Stage::Stage(Window *window, std::string path, int stage_number, float scale, Wi
         snprintf(title, sizeof(title), "%dx%02x", stage_number, i);
 
         level_executor_info.push_back({this, i});
-        level_buttons.push_back(TextButton(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(event_handler, &(level_executor_info[i]))));
+        level_buttons.push_back(TextButton(window, {x, y}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(run_level, &(level_executor_info[i]))));
 
         printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }
@@ -73,4 +74,36 @@ void Stage::render() {
 
     for (size_t i = 0; i < this->level_buttons.size(); i++)
         this->level_buttons[i].render();
+}
+
+bool Stage::run_level(sf::Event &event, void *data) {
+    auto *info = (std::pair<Stage *, int> *)data;
+
+    info->first->getWindow().setVisible(false);
+
+    LevelScreen *window = nullptr;
+
+    do {
+        if (window != nullptr) delete window;
+
+        level_creation_data creation_data;
+        creation_data.level_id = info->second;
+        creation_data.path = info->first->path;
+        creation_data.level_window = (Window **)&window;
+        creation_data.selection_window = &info->first->getWindow();
+
+        info->first->level_creation_provider(event, &creation_data);
+        window->next_level_exists = (info->second + 1) < info->first->getNumberOfLevels();
+
+        while (window->run())
+            ;
+
+        info->second++;
+
+    } while (window->next_level_flag);
+
+    delete window;
+
+    info->first->getWindow().setVisible(true);
+    return true;
 }

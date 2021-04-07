@@ -30,7 +30,7 @@ class SelectionScreen : public Window {
 
     std::string stage_path;
 
-    Window::event_handler_fnk_t onOpenLevel;
+    Window::event_handler_fnk_t onCreateLevel;
 
     void setup_selection();
     void render_selection();

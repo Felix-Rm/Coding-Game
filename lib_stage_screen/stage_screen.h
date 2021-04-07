@@ -15,7 +15,6 @@ class StageScreen : public SelectionScreen {
 
     static bool onMouseScroll(sf::Event &event, void *data);
     static bool run_level(sf::Event &event, void *data);
-
     ImageButton btn_exit;
 
    public:

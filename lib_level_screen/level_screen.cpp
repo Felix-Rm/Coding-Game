@@ -166,23 +166,36 @@ void LevelScreen::render() {
 
     if (level_complete) {
         if (!level_complete_dialog) {
+            sf::Vector2f button_size = {170, 40};
             sf::Vector2f star_size = {200, 200};
             sf::Vector2f dialog_size = {800, 500};
+            float text_size = 40;
+            float button_text_size = 20;
+            float star_padding = (dialog_size.x - star_size.x * 3) / 4;
+            float button_padding = 10;
+
+            sf::Vector2f text_pos = {0, 20};
+            sf::Vector2f star_pos = {star_padding, dialog_size.y - star_size.y - button_size.y - star_padding * 2};
+            sf::Vector2f button_pos = {dialog_size.x - button_size.x - button_padding, dialog_size.y - button_size.y - button_padding};
+
             sf::Vector2f dialog_pos = {(view_size.x - dialog_size.x) / 2, (view_size.y - dialog_size.y) / 2};
             level_complete_dialog = new Dialog(this, dialog_pos, dialog_size, 4, GameStyle::DARK_GRAY);
 
-            level_complete_dialog->addText("Level geschafft!", {0, 20}, 40, GameStyle::GOLD, true);
+            level_complete_dialog->addText(text_pos, "Level complete!", text_size, GameStyle::GOLD, true);
 
-            float padding = (dialog_size.x - star_size.x * 3) / 4;
-            sf::Vector2f star_pos = {padding, dialog_size.y - star_size.y - padding};
+            level_complete_dialog->addImage(star_pos, star_size, &(star_textures[1][0]));
+            star_pos.x += star_padding + star_size.x;
 
-            level_complete_dialog->addImage(&(star_textures[1][0]), star_pos, star_size);
-            star_pos.x += padding + star_size.x;
+            level_complete_dialog->addImage(star_pos, star_size, &(star_textures[energy_limit][1]));
+            star_pos.x += star_padding + star_size.x;
 
-            level_complete_dialog->addImage(&(star_textures[energy_limit][1]), star_pos, star_size);
-            star_pos.x += padding + star_size.x;
+            level_complete_dialog->addImage(star_pos, star_size, &(star_textures[boni_collected][2]));
 
-            level_complete_dialog->addImage(&(star_textures[boni_collected][2]), star_pos, star_size);
+            level_complete_dialog->addButton(button_pos, button_size, "Back to menu", button_text_size, 2, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(Window::event_close, this));
+            button_pos.x -= button_padding + button_size.x;
+
+            if (next_level_exists)
+                level_complete_dialog->addButton(button_pos, button_size, "Next level", button_text_size, 2, GameStyle::BLACK, GameStyle::GREEN, Window::createEventHandler(LevelScreen::onNextLevel, this));
         }
 
         level_complete_dialog->render();
@@ -206,6 +219,10 @@ bool LevelScreen::onScroll(sf::Event &event, void *data) {
     float zoom_rate = 1.2;
 
     LevelScreen *obj = (LevelScreen *)data;
+
+    if (obj->level_complete_dialog != nullptr)
+        return false;
+
     float delta = event.mouseWheel.delta > 0 ? event.mouseWheel.delta * zoom_rate : 1 / (-event.mouseWheel.delta * zoom_rate);
 
     obj->scale *= delta;
@@ -223,6 +240,9 @@ bool LevelScreen::onScroll(sf::Event &event, void *data) {
 bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
     LevelScreen *obj = (LevelScreen *)data;
 
+    if (obj->level_complete_dialog != nullptr)
+        return false;
+
     obj->mouse_pos = {(float)event.mouseMove.x, (float)event.mouseMove.y};
 
     if (obj->mouse_down[0]) {
@@ -239,6 +259,9 @@ bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
 bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
     LevelScreen *obj = (LevelScreen *)data;
 
+    if (obj->level_complete_dialog != nullptr)
+        return false;
+
     obj->mouse_down[event.mouseButton.button] = event.type == sf::Event::MouseButtonPressed;
 
     if (event.mouseButton.button != 0)
@@ -248,6 +271,15 @@ bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
         obj->last_mouse_click_pos = {(float)event.mouseButton.x, (float)event.mouseButton.y};
         obj->prev_origin = obj->origin;
     }
+
+    return true;
+}
+
+bool LevelScreen::onNextLevel(sf::Event &event, void *data) {
+    LevelScreen *obj = (LevelScreen *)data;
+
+    obj->next_level_flag = true;
+    obj->close();
 
     return true;
 }

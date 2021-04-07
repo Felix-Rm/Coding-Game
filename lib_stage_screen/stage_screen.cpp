@@ -2,7 +2,7 @@
 
 StageScreen::StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : SelectionScreen(video_mode, title, style) {
     this->stage_path = "_assets/stages/";
-    this->onOpenLevel = StageScreen::run_level;
+    this->onCreateLevel = run_level;
 
     std::ifstream stage_info("_assets/stages.info");
     if (!stage_info)
@@ -35,15 +35,10 @@ bool StageScreen::onMouseScroll(sf::Event &event, void *data) {
 }
 
 bool StageScreen::run_level(sf::Event &event, void *data) {
-    auto *info = (std::pair<Stage *, int> *)data;
+    Stage::level_creation_data *creation_data = (Stage::level_creation_data *)data;
 
-    LevelScreen window{info->first->getWindow().getVideoMode(), "Level " + std::to_string(info->second), info->first->getWindow().getStyle(), info->second, info->first->path};
+    *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
 
-    info->first->getWindow().setVisible(false);
-    while (window.run())
-        ;
-
-    info->first->getWindow().setVisible(true);
     return true;
 }
 

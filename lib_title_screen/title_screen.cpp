@@ -5,7 +5,7 @@ TitleScreen::TitleScreen() : Window(sf::VideoMode::getDesktopMode(), "Info Game"
 }
 
 void TitleScreen::setup() {
-    std::string button_names[] = {"Kampagne", "Sandbox", "Einstellungen", "Beenden"};
+    std::string button_names[] = {"Campaign", "Sandbox", "Settings", "Exit"};
 
     Window::event_handler_t button_event_handlers[] = {
         Window::createEventHandler(runCampaign, this),

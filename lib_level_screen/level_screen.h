@@ -37,6 +37,9 @@ class LevelScreen : public Window {
     friend Bot;
     friend TopBar;
 
+    bool next_level_exists = false;
+    bool next_level_flag = false;
+
    protected:
     std::string path;
     sf::Vector2u size;
@@ -80,8 +83,9 @@ class LevelScreen : public Window {
 
     void loadTextures();
 
-  
     static bool onMouseMove(sf::Event &, void *);
     static bool onMouseButton(sf::Event &, void *);
     static bool onScroll(sf::Event &, void *);
+
+    static bool onNextLevel(sf::Event &, void *);
 };

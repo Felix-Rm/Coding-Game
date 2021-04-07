@@ -3,6 +3,7 @@
 #include "drawable.h"
 #include "image.h"
 #include "text.h"
+#include "text_button.h"
 
 class Dialog : public Drawable {
    public:
@@ -17,16 +18,22 @@ class Dialog : public Drawable {
         items.push_back(item);
     }
 
-    void addText(std::string text, sf::Vector2f pos, float text_size, sf::Color color, bool center = false) {
+    void addText(sf::Vector2f pos, std::string text, float text_size, sf::Color color, bool center = false) {
         Text* text_elt = new Text(window, {this->pos.x + pos.x, this->pos.y + pos.y}, {this->size.x, text_size}, text, text_size, color);
         if (center) text_elt->center();
         items.push_back(text_elt);
     }
 
-    void addImage(sf::Texture* tex, sf::Vector2f pos, sf::Vector2f size, bool center = false) {
+    void addImage(sf::Vector2f pos, sf::Vector2f size, sf::Texture* tex, bool center = false) {
         Image* image_elt = new Image(window, {this->pos.x + pos.x, this->pos.y + pos.y}, size, tex);
         if (center) image_elt->center();
         items.push_back(image_elt);
+    }
+
+    void addButton(sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler, bool center = false) {
+        TextButton* button_elt = new TextButton(window, {this->pos.x + pos.x, this->pos.y + pos.y}, size, text, text_size, outline_thickness, fg_color, bg_color, handler);
+        if (center) button_elt->center();
+        items.push_back(button_elt);
     }
 
     Dialog(Dialog&& other) : Drawable(other) {

@@ -28,7 +28,7 @@ void SelectionScreen::calculateStagePositions() {
         }
 
         if (!stage_loaded[i] && (int)i >= bottom_stage_id && (int)i <= top_stage_id) {
-            stages[i] = new Stage(this, stage_path, i, stage_scaling, onOpenLevel);
+            stages[i] = new Stage(this, stage_path, i, stage_scaling, onCreateLevel);
             stage_loaded[i] = true;
         }
 
