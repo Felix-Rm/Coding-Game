@@ -40,8 +40,18 @@ class Stage : public Drawable {
     std::vector<std::pair<Stage *, int>> level_executor_info;
     std::vector<TextButton> level_buttons;
     int num_buttons = 0;
+    int stage_number = 0;
 
     Window::event_handler_fnk_t level_creation_provider;
 
+    sf::FloatRect stage_size;
+    int num_rows, num_columns,
+        button_spacing_x, button_spacing_y,
+        button_width, button_height,
+        button_text_size, button_outline_size;
+
+    static sf::Color progress_colors[4];
     static bool run_level(sf::Event &event, void *data);
+
+    void placeButtons();
 };

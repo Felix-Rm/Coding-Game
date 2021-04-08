@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.1)
 project (game)
 
-SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -Wall")
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++17 -Wall")
 set(EXECUTABLE_OUTPUT_PATH ../)
 
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)

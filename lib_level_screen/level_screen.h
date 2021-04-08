@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -31,6 +32,8 @@ class LevelScreen : public Window {
 
     void activateManualControlls();
 
+    static int checkState(std::string filename, bool &completed, bool &energy, bool &boni);
+
     friend SpawnerTile;
     friend FinishTile;
     friend BonusTile;
@@ -56,8 +59,6 @@ class LevelScreen : public Window {
     std::vector<Bot *> bots;
     std::vector<WinCondition *> win_conditions;
 
-    bool boni_collected;
-
     static constexpr long original_ms_per_unit_movement = 1000;
     int movement_multiplyer = 2;
 
@@ -68,6 +69,10 @@ class LevelScreen : public Window {
     TopBar *top_bar;
     Dialog *level_complete_dialog = nullptr;
 
+    bool level_completed = false;
+    bool battery_not_empty = false;
+    bool boni_collected = false;
+
     Tile *generateTileFromId(int id, sf::Vector2f pos, sf::Vector2u tile_pos);
 
     friend std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj);
@@ -76,6 +81,8 @@ class LevelScreen : public Window {
     void setup() override;
     void render() override;
     void updatePosition();
+
+    bool saveState();
 
    private:
     static sf::Texture star_textures[2][3];

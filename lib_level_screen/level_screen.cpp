@@ -146,10 +146,10 @@ void LevelScreen::render() {
         }
     }
 
-    bool level_complete = win_conditions.size() > 0;
+    level_completed = win_conditions.size() > 0;
     for (auto &condition : win_conditions) {
         if (!condition->isMet()) {
-            level_complete = false;
+            level_completed = false;
             break;
         }
     }
@@ -162,10 +162,12 @@ void LevelScreen::render() {
 
     top_bar->render();
 
-    bool energy_limit = elapsed_time < 10;
+    battery_not_empty = elapsed_time < 10;
 
-    if (level_complete) {
+    if (level_completed) {
         if (!level_complete_dialog) {
+            bool best_so_far = saveState();
+
             sf::Vector2f button_size = {170, 40};
             sf::Vector2f star_size = {200, 200};
             sf::Vector2f dialog_size = {800, 500};
@@ -175,6 +177,7 @@ void LevelScreen::render() {
             float button_padding = 10;
 
             sf::Vector2f text_pos = {0, 20};
+            sf::Vector2f sub_text_pos = {0, 80};
             sf::Vector2f star_pos = {star_padding, dialog_size.y - star_size.y - button_size.y - star_padding * 2};
             sf::Vector2f button_pos = {dialog_size.x - button_size.x - button_padding, dialog_size.y - button_size.y - button_padding};
 
@@ -183,10 +186,12 @@ void LevelScreen::render() {
 
             level_complete_dialog->addText(text_pos, "Level complete!", text_size, GameStyle::GOLD, true);
 
+            level_complete_dialog->addText(sub_text_pos, best_so_far ? "This is your best result!" : "You've done better!", button_text_size, best_so_far ? GameStyle::GREEN : GameStyle::RED, true);
+
             level_complete_dialog->addImage(star_pos, star_size, &(star_textures[1][0]));
             star_pos.x += star_padding + star_size.x;
 
-            level_complete_dialog->addImage(star_pos, star_size, &(star_textures[energy_limit][1]));
+            level_complete_dialog->addImage(star_pos, star_size, &(star_textures[battery_not_empty][1]));
             star_pos.x += star_padding + star_size.x;
 
             level_complete_dialog->addImage(star_pos, star_size, &(star_textures[boni_collected][2]));
@@ -290,4 +295,42 @@ void LevelScreen::loadTextures() {
         star_textures[1][i].loadFromFile("_assets/textures/stars/" + std::to_string(i) + ".png");
     }
     textures_loaded = true;
+}
+
+int LevelScreen::checkState(std::string filename, bool &completed, bool &energy, bool &boni) {
+    if (std::filesystem::exists(filename)) {
+        std::ifstream savefile(filename);
+
+        savefile >> completed;
+        savefile >> energy;
+        savefile >> boni;
+    } else {
+        completed = false;
+        energy = false;
+        boni = false;
+    }
+
+    return (int)completed + (int)energy + (int)boni;
+}
+
+bool LevelScreen::saveState() {
+    std::string save_path = "_user/gamesave/" + this->path;
+
+    std::filesystem::create_directories(save_path);
+
+    bool old_completed, old_energy, old_boni;
+    int old_progress = checkState(save_path + "/completion_state.info", old_completed, old_energy, old_boni);
+    int progress = (int)level_completed + (int)battery_not_empty + (int)boni_collected;
+
+    if (old_completed && !level_completed) return false;
+    if (old_progress > progress) return false;
+
+    std::ofstream savefile(save_path + "/completion_state.info");
+
+    savefile << level_completed << ' ';
+    savefile << battery_not_empty << ' ';
+    savefile << boni_collected << ' ';
+
+    savefile.close();
+    return true;
 }
