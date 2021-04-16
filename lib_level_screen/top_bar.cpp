@@ -26,24 +26,22 @@ void TopBar::updatePosition() {
 
     update();
 
-    this->btn_play = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
-                                 GameStyle::Icon::PLAY, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_noop, nullptr));
+    this->btn_play = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::PLAY);
     this->btn_play.center();
 
-    this->btn_stop = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
-                                 GameStyle::Icon::STOP, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_noop, nullptr));
+    this->btn_stop = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::STOP);
     this->btn_stop.center();
 
-    this->btn_exit = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size},
-                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(Window::event_close, this->window));
+    this->btn_exit = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::EXIT);
+    this->btn_exit.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this->window, Window::event_close));
     this->btn_exit.center();
 
-    this->btn_speed_plus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
-                                      "+", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_plus, this));
+    this->btn_speed_plus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)}, "+", this->text_size * (1 / 3.0));
+    this->btn_speed_plus.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, event_speed_plus));
     this->btn_speed_plus.center();
 
-    this->btn_speed_minus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)},
-                                       "-", this->text_size * (1 / 3.0), 1, GameStyle::WHITE, GameStyle::GOLD, Window::createEventHandler(event_speed_minus, this));
+    this->btn_speed_minus = TextButton(this->window, {0, 0}, {(float)(this->size.y * 0.35), (float)(this->size.y * 0.35)}, "-", this->text_size * (1 / 3.0));
+    this->btn_speed_minus.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, event_speed_minus));
     this->btn_speed_minus.center();
 
     auto time_text_bounds = this->time_text.getLocalBounds();

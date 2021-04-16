@@ -1,10 +1,9 @@
 #include "text_button.h"
 
-TextButton::TextButton(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler)
-    : Button(window, pos, size, outline_thickness, bg_color, handler) {
+TextButton::TextButton(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size)
+    : Button(window, pos, size) {
     this->text = text;
     this->text_size = text_size;
-    this->text_color = fg_color;
 
     loadText();
 }
@@ -20,7 +19,7 @@ void TextButton::loadText() {
     this->text_sprite.setPosition({pos.x - text_bounds.left + size.x / 2 - text_bounds.width / 2, pos.y - text_bounds.top + size.y / 2 - text_bounds.height / 2});
 }
 
-void TextButton::copyFrom(TextButton &other) {
+void TextButton::copyFrom(const TextButton &other) {
     text = other.text;
     text_size = other.text_size;
     text_color = other.text_color;

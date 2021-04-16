@@ -7,7 +7,7 @@ class ImageButton : public Button {
     sf::Texture texture;
     sf::Sprite image;
 
-    float image_scale;
+    float image_scale = 0.7;
     GameStyle::Icon icon_id;
 
     void loadImage();
@@ -16,7 +16,7 @@ class ImageButton : public Button {
 
    public:
     ImageButton() : Button() {}
-    ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id, float image_scale, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
+    ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id);
 
     ImageButton(ImageButton &&other) : Button(other) {
         copyFrom(other);
@@ -39,6 +39,11 @@ class ImageButton : public Button {
     ~ImageButton();
 
     ImageButton &center();
+
+    void setImageScale(float s) {
+        image_scale = s;
+        loadImage();
+    }
 
     void render() override;
     void setPosition(float x, float y) override;

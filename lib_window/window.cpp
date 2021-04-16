@@ -29,14 +29,14 @@ Window::Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : 
                     this, 1, sf::Event::Closed);
 }
 
-Window::event_handler_t Window::createEventHandler(bool (*ptr)(sf::Event &, void *), void *data) {
+Window::event_handler_t Window::createEventHandler(void *data, event_handler_fnk_t ptr) {
     Window::event_handler_t handler;
     handler.ptr = ptr;
     handler.data = data;
     return handler;
 }
 
-void Window::addEventHandler(bool (*ptr)(sf::Event &, void *), void *data, int numEvents, ...) {
+void Window::addEventHandler(event_handler_fnk_t ptr, void *data, int numEvents, ...) {
     va_list args;
     va_start(args, numEvents);
 

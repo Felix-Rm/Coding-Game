@@ -196,11 +196,11 @@ void LevelScreen::render() {
 
             level_complete_dialog->addImage(star_pos, star_size, &(star_textures[boni_collected][2]));
 
-            level_complete_dialog->addButton(button_pos, button_size, "Back to menu", button_text_size, 2, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(Window::event_close, this));
+            level_complete_dialog->addButton(button_pos, button_size, "Back to menu", button_text_size, 2, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(this, Window::event_close));
             button_pos.x -= button_padding + button_size.x;
 
             if (next_level_exists)
-                level_complete_dialog->addButton(button_pos, button_size, "Next level", button_text_size, 2, GameStyle::BLACK, GameStyle::GREEN, Window::createEventHandler(LevelScreen::onNextLevel, this));
+                level_complete_dialog->addButton(button_pos, button_size, "Next level", button_text_size, 2, GameStyle::BLACK, GameStyle::GREEN, Window::createEventHandler(this, LevelScreen::onNextLevel));
         }
 
         level_complete_dialog->render();
@@ -250,7 +250,7 @@ bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
 
     obj->mouse_pos = {(float)event.mouseMove.x, (float)event.mouseMove.y};
 
-    if (obj->mouse_down[0]) {
+    if (obj->mouse_down[sf::Mouse::Button::Left]) {
         sf::Vector2f drag_dist = {event.mouseMove.x - obj->last_mouse_click_pos.x, event.mouseMove.y - obj->last_mouse_click_pos.y};
         obj->origin.x = obj->prev_origin.x + drag_dist.x;
         obj->origin.y = obj->prev_origin.y + drag_dist.y;
@@ -269,7 +269,7 @@ bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
 
     obj->mouse_down[event.mouseButton.button] = event.type == sf::Event::MouseButtonPressed;
 
-    if (event.mouseButton.button != 0)
+    if (event.mouseButton.button != sf::Mouse::Button::Left)
         return false;
 
     if (event.type == sf::Event::MouseButtonPressed) {

@@ -38,6 +38,12 @@ Stage::Stage(Window *window, std::string path, int stage_number, float scale, Wi
     button_text_size = button_height * 0.6;
     button_outline_size = button_width * 0.05;
 
+    btn_add = TextButton(window, {0, 0}, {button_width, button_height}, "+", button_text_size);
+    btn_add.setOutline(button_outline_size);
+    btn_add.setTextColor(GameStyle::LIGHT_GRAY);
+    btn_add.setBgColor(GameStyle::GREEN);
+    btn_add.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(nullptr, Window::event_noop));
+
     level_executor_info.resize(num_buttons);
     level_buttons.resize(num_buttons);
     placeButtons();
@@ -58,10 +64,15 @@ void Stage::placeButtons() {
         sf::Color button_color = progress_colors[level_progress];
 
         level_executor_info[i] = {this, i};
-        level_buttons[i] = TextButton(window, {0, 0}, {(float)button_width, (float)button_height}, title, button_text_size, button_outline_size, GameStyle::LIGHT_GRAY, button_color, Window::createEventHandler(run_level, &(level_executor_info[i])));
+        level_buttons[i] = TextButton(window, {0, 0}, {(float)button_width, (float)button_height}, title, button_text_size);
+        level_buttons[i].setOutline(button_outline_size);
+        level_buttons[i].setTextColor(GameStyle::LIGHT_GRAY);
+        level_buttons[i].setBgColor(button_color);
+        level_buttons[i].setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(&(level_executor_info[i]), run_level));
 
         //printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }
+
     setPosition(this->pos.x, this->pos.y);
 }
 
@@ -78,6 +89,15 @@ void Stage::setPosition(float x, float y) {
 
         level_buttons[i].setPosition(x, y);
     }
+
+    if (btn_add_activated) {
+        int col_num = num_buttons % num_columns;
+        int row_num = num_buttons / num_columns;
+        float x = pos.x - button_width / 2.0 + stage_size.width / 2.0 - button_spacing_x * ((num_columns / 2.0) - col_num - 0.5);
+        float y = pos.y - button_height / 2.0 + stage_size.height / 2.0 - button_spacing_y * ((num_rows / 2.0) - row_num - 0.5);
+
+        btn_add.setPosition(x, y);
+    }
 }
 
 void Stage::render() {
@@ -85,6 +105,8 @@ void Stage::render() {
 
     for (size_t i = 0; i < this->level_buttons.size(); i++)
         this->level_buttons[i].render();
+
+    if (btn_add_activated) btn_add.render();
 }
 
 bool Stage::run_level(sf::Event &event, void *data) {

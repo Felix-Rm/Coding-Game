@@ -31,7 +31,12 @@ class Dialog : public Drawable {
     }
 
     void addButton(sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler, bool center = false) {
-        TextButton* button_elt = new TextButton(window, {this->pos.x + pos.x, this->pos.y + pos.y}, size, text, text_size, outline_thickness, fg_color, bg_color, handler);
+        TextButton* button_elt = new TextButton(window, {this->pos.x + pos.x, this->pos.y + pos.y}, size, text, text_size);
+        button_elt->setOutline(outline_thickness);
+        button_elt->setTextColor(fg_color);
+        button_elt->setBgColor(bg_color);
+        button_elt->setEventHandler(sf::Mouse::Button::Left, handler);
+
         if (center) button_elt->center();
         items.push_back(button_elt);
     }

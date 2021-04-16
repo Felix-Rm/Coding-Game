@@ -14,14 +14,21 @@ SandboxScreen::SandboxScreen(sf::VideoMode video_mode, std::string title, sf::Ui
     for (int i = 0; i < num_stages; i++)
         stage_loaded.push_back(false);
 
-    this->btn_exit = ImageButton(this, {0, 0}, {60, 60},
-                                 GameStyle::Icon::EXIT, 0.7, 1, GameStyle::WHITE, GameStyle::RED, Window::createEventHandler([](sf::Event &event, void *data) {
-                                     ((Window *)data)->close();
-                                     return true;
-                                 },
-                                                                                                                             this));
+    this->btn_exit = ImageButton(this, {0, 0}, {60, 60}, GameStyle::Icon::EXIT);
+    this->btn_exit.setImageScale(0.7);
+    this->btn_exit.setOutline(1);
+    this->btn_exit.setBgColor(GameStyle::RED);
+    this->btn_exit.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this,
+                                                                                       [](sf::Event &event, void *data) {
+                                                                                           ((Window *)data)->close();
+                                                                                           return true;
+                                                                                       }));
 
-    this->btn_edit = ImageButton(this, {0, 0}, {60, 60}, GameStyle::Icon::EDIT, 0.7, 1, GameStyle::WHITE, GameStyle::GRAY, Window::createEventHandler(onEditToggle, this));
+    this->btn_edit = ImageButton(this, {0, 0}, {60, 60}, GameStyle::Icon::EDIT);
+    this->btn_edit.setImageScale(0.7);
+    this->btn_edit.setOutline(1);
+    this->btn_edit.setBgColor(GameStyle::GRAY);
+    this->btn_edit.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, onEditToggle));
 
     setup();
 
@@ -39,8 +46,14 @@ bool SandboxScreen::onEditToggle(sf::Event &event, void *data) {
     SandboxScreen *obj = (SandboxScreen *)data;
     obj->edit_activated = !obj->edit_activated;
 
+    for (auto &stage : obj->stages) stage.second->activateAddButton(obj->edit_activated);
+
     obj->btn_edit.setBgColor(obj->edit_activated ? GameStyle::GREEN : GameStyle::GRAY);
     return true;
+}
+
+void SandboxScreen::onStageLoad(Stage *stage) {
+    stage->activateAddButton(edit_activated);
 }
 
 bool SandboxScreen::run_level(sf::Event &event, void *data) {

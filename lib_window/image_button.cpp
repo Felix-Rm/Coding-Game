@@ -1,9 +1,9 @@
 #include "image_button.h"
 
-ImageButton::ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id, float image_scale, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler)
-    : Button(window, pos, size, outline_thickness, bg_color, handler) {
+ImageButton::ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id)
+    : Button(window, pos, size) {
     this->icon_id = icon_id;
-    this->image_scale = image_scale;
+
     loadImage();
 }
 

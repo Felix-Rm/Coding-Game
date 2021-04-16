@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "../lib_campaign_screen/campaign_screen.h"
 #include "../lib_sandbox_screen/sandbox_screen.h"
-#include "../lib_stage_screen/stage_screen.h"
 #include "../lib_window/style.h"
 #include "../lib_window/text_button.h"
 #include "../lib_window/window.h"

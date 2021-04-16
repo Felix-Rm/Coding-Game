@@ -20,8 +20,8 @@ add_subdirectory(lib_selection_screen)
 link_directories(${PROJECT_SOURCE_DIR}/lib_title_screen)
 add_subdirectory(lib_title_screen)
 
-link_directories(${PROJECT_SOURCE_DIR}/lib_stage_screen)
-add_subdirectory(lib_stage_screen)
+link_directories(${PROJECT_SOURCE_DIR}/lib_campaign_screen)
+add_subdirectory(lib_campaign_screen)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib_sandbox_screen)
 add_subdirectory(lib_sandbox_screen)
@@ -34,5 +34,5 @@ add_subdirectory(lib_level_editor_screen)
 
 add_executable (game main.cpp)
 
-target_link_libraries(game title_screen stage_screen sandbox_screen level_screen level_editor_screen)
+target_link_libraries(game title_screen campaign_screen sandbox_screen level_screen level_editor_screen)
 target_link_libraries (game sfml-system sfml-window sfml-graphics sfml-network sfml-audio)

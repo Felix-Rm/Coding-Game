@@ -5,24 +5,24 @@
 class TextButton : public Button {
    private:
     std::string text;
-    sf::Color text_color;
+    sf::Color text_color = GameStyle::LIGHT_GRAY;
     float text_size;
 
     sf::Text text_sprite;
 
-    void copyFrom(TextButton &other);
+    void copyFrom(const TextButton &other);
     void loadText();
 
    public:
     TextButton() : Button() {}
-    TextButton(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size, int outline_thickness, sf::Color fg_color, sf::Color bg_color, Window::event_handler_t handler);
+    TextButton(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size);
 
     TextButton(TextButton &&other) : Button(other) {
         copyFrom(other);
         loadText();
     };
 
-    TextButton(TextButton &other) : Button(other) {
+    TextButton(const TextButton &other) : Button(other) {
         copyFrom(other);
         loadText();
     };
@@ -37,6 +37,11 @@ class TextButton : public Button {
     ~TextButton();
 
     TextButton &center();
+
+    void setTextColor(sf::Color c) {
+        text_color = c;
+        loadText();
+    }
 
     void render() override;
     void setPosition(float x, float y) override;

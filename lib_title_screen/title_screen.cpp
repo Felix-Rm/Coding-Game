@@ -8,14 +8,14 @@ void TitleScreen::setup() {
     std::string button_names[] = {"Campaign", "Sandbox", "Settings", "Exit"};
 
     Window::event_handler_t button_event_handlers[] = {
-        Window::createEventHandler(runCampaign, this),
-        Window::createEventHandler(runSandbox, this),
-        Window::createEventHandler(Window::event_noop, nullptr),
-        Window::createEventHandler([](sf::Event &event, void *data) {
-            ((Window *)data)->close();
-            return true;
-        },
-                                   this)};
+        Window::createEventHandler(this, runCampaign),
+        Window::createEventHandler(this, runSandbox),
+        Window::createEventHandler(nullptr, Window::event_noop),
+        Window::createEventHandler(this,
+                                   [](sf::Event &event, void *data) {
+                                       ((Window *)data)->close();
+                                       return true;
+                                   })};
 
     int button_names_length = sizeof(button_names) / sizeof(button_names[0]);
     sf::Vector2f button_size = {850, 120};
@@ -29,7 +29,11 @@ void TitleScreen::setup() {
 
     for (int i = 0; i < button_names_length; i++) {
         sf::Vector2f pos = {this->view_size.x / 2 - button_size.x / 2, vertical_start + i * (button_size.y + button_vertical_spacing)};
-        buttons.push_back(TextButton(this, pos, button_size, button_names[i], button_text_size, button_outline_thickness, GameStyle::LIGHT_GRAY, GameStyle::ORANGE, button_event_handlers[i]));
+        TextButton button{this, pos, button_size, button_names[i], (float)button_text_size};
+        button.setOutline(button_outline_thickness);
+        button.setEventHandler(sf::Mouse::Button::Left, button_event_handlers[i]);
+
+        buttons.push_back(button);
     }
 }
 
@@ -44,7 +48,7 @@ void TitleScreen::render() {
 
 bool TitleScreen::runCampaign(sf::Event &event, void *data) {
     TitleScreen *obj = (TitleScreen *)data;
-    StageScreen stage_screen{obj->video_mode, "Campaign", obj->style};
+    CampaignScreen stage_screen{obj->video_mode, "Campaign", obj->style};
 
     obj->setVisible(false);
 

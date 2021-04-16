@@ -24,6 +24,11 @@ class Stage : public Drawable {
     static bool onMouseMove(sf::Event &event, void *);
     static bool onMousePress(sf::Event &event, void *);
 
+    void activateAddButton(bool a = true) {
+        btn_add_activated = a;
+        setPosition(pos.x, pos.y);
+    };
+
     std::string path;
 
     typedef struct {
@@ -42,11 +47,14 @@ class Stage : public Drawable {
     int num_buttons = 0;
     int stage_number = 0;
 
+    TextButton btn_add;
+    bool btn_add_activated = false;
+
     Window::event_handler_fnk_t level_creation_provider;
 
     sf::FloatRect stage_size;
-    int num_rows, num_columns,
-        button_spacing_x, button_spacing_y,
+    int num_rows, num_columns;
+    float button_spacing_x, button_spacing_y,
         button_width, button_height,
         button_text_size, button_outline_size;
 

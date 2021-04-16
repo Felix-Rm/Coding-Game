@@ -15,6 +15,8 @@ class SandboxScreen : public SelectionScreen {
     void setup() override;
     void render() override;
 
+      void onStageLoad(Stage* stage) override;
+
     static bool onMouseScroll(sf::Event &event, void *data);
     static bool onEditToggle(sf::Event &event, void *data);
     static bool run_level(sf::Event &event, void *data);

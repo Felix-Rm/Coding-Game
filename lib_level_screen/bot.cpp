@@ -34,8 +34,8 @@ void Bot::setPosition(float x, float y) {
 };
 
 void Bot::setTilePosition(unsigned int x, unsigned int y) {
-    this->tile_position = {x, y};
-    this->target_position = {x, y};
+    this->tile_position = {(float)x, (float)y};
+    this->target_position = {(float)x, (float)y};
 
     this->updatePosition();
 }

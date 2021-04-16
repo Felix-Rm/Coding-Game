@@ -30,12 +30,14 @@ void SelectionScreen::calculateStagePositions() {
         if (!stage_loaded[i] && (int)i >= bottom_stage_id && (int)i <= top_stage_id) {
             stages[i] = new Stage(this, stage_path, i, stage_scaling, onCreateLevel);
             stage_loaded[i] = true;
+            onStageLoad(stages[i]);
         }
 
         if (stage_loaded[i]) {
             stages[i]->setPosition(0, stage_scroll_offset);
-            stage_scroll_offset -= stage_size.y;
         }
+
+        stage_scroll_offset -= stage_size.y;
     }
 }
 

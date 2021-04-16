@@ -8,7 +8,7 @@
 
 #include "../lib_selection_screen/selection_screen.h"
 
-class StageScreen : public SelectionScreen {
+class CampaignScreen : public SelectionScreen {
    private:
     void setup() override;
     void render() override;
@@ -18,5 +18,5 @@ class StageScreen : public SelectionScreen {
     ImageButton btn_exit;
 
    public:
-    StageScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
+    CampaignScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 };

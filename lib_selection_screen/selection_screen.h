@@ -35,6 +35,8 @@ class SelectionScreen : public Window {
     void setup_selection();
     void render_selection();
 
+    virtual void onStageLoad(Stage *stage){};
+
     static bool onMouseScroll_selection(sf::Event &event, void *data);
 
    public:

@@ -15,7 +15,7 @@ int main() {
         throw std::runtime_error("[GameStyle] could not load resources!");
 
     TitleScreen window{};
-    //StageScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
+    //CampaignScreen window{sf::VideoMode::getDesktopMode(), "Campaign", sf::Style::Default};
     //SandboxScreen window{sf::VideoMode::getDesktopMode(), "Sandbox", sf::Style::Default};
 
     // std::string level_path = "_assets/stages/0/";
