@@ -24,10 +24,7 @@ class Stage : public Drawable {
     static bool onMouseMove(sf::Event &event, void *);
     static bool onMousePress(sf::Event &event, void *);
 
-    void activateAddButton(bool a = true) {
-        btn_add_activated = a;
-        setPosition(pos.x, pos.y);
-    };
+    void activateEditMode(bool a = true);
 
     std::string path;
 
@@ -47,8 +44,11 @@ class Stage : public Drawable {
     int num_buttons = 0;
     int stage_number = 0;
 
-    TextButton btn_add;
-    bool btn_add_activated = false;
+    TextButton *btn_add = nullptr;
+    bool edit_mode_activated = false;
+    static bool addLevel(sf::Event &event, void *data);
+
+    void load();
 
     Window::event_handler_fnk_t level_creation_provider;
 

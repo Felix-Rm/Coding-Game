@@ -14,6 +14,14 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
 
     this->path = path + std::to_string(level_num) + '/';
 
+    if (!std::filesystem::exists(this->path + "level.info")) {
+        printf("creating not existing level\n");
+        std::filesystem::create_directories(this->path);
+        std::ofstream level_info(this->path + "level.info");
+        level_info << "1 1 1";
+        level_info.close();
+    }
+
     std::ifstream level_info(this->path + "level.info");
     if (!level_info)
         throw std::runtime_error("could not open level info");
