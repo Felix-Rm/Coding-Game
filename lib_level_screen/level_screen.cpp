@@ -204,11 +204,15 @@ void LevelScreen::render() {
 
             level_complete_dialog->addImage(star_pos, star_size, &(star_textures[boni_collected][2]));
 
-            level_complete_dialog->addButton(button_pos, button_size, "Back to menu", button_text_size, 2, GameStyle::BLACK, GameStyle::RED, Window::createEventHandler(this, Window::event_close));
+            auto *temp = level_complete_dialog->addButton(button_pos, button_size, "Back to menu", button_text_size, 2, GameStyle::BLACK, GameStyle::RED);
+            temp->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, Window::event_close));
+
             button_pos.x -= button_padding + button_size.x;
 
-            if (next_level_exists)
-                level_complete_dialog->addButton(button_pos, button_size, "Next level", button_text_size, 2, GameStyle::BLACK, GameStyle::GREEN, Window::createEventHandler(this, LevelScreen::onNextLevel));
+            if (next_level_exists) {
+                temp = level_complete_dialog->addButton(button_pos, button_size, "Next level", button_text_size, 2, GameStyle::BLACK, GameStyle::GREEN);
+                temp->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, LevelScreen::onNextLevel));
+            }
         }
 
         level_complete_dialog->render();

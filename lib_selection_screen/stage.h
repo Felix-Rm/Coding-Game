@@ -44,11 +44,20 @@ class Stage : public Drawable {
     int num_buttons = 0;
     int stage_number = 0;
 
-    TextButton *btn_add = nullptr;
+    Dialog *context = nullptr;
+
     bool edit_mode_activated = false;
+    static bool contextMenu(sf::Event &event, void *data);
+    static bool deleteLevel(sf::Event &event, void *data);
     static bool addLevel(sf::Event &event, void *data);
+    static bool addLevelLeft(sf::Event &event, void *data);
+    static bool addLevelRight(sf::Event &event, void *data);
+
+    static bool run_level(sf::Event &event, void *data);
 
     void load();
+
+    void shiftLevels(int start, int end, int by);
 
     Window::event_handler_fnk_t level_creation_provider;
 
@@ -59,7 +68,6 @@ class Stage : public Drawable {
         button_text_size, button_outline_size;
 
     static sf::Color progress_colors[4];
-    static bool run_level(sf::Event &event, void *data);
 
     void placeButtons();
 };

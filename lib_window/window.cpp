@@ -51,13 +51,14 @@ void Window::addEventHandler(event_handler_fnk_t ptr, void *data, int numEvents,
     event_handlers.push_back(handler);
 }
 
-void Window::removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data) {
+bool Window::removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data) {
     for (size_t i = 0; i < event_handlers.size(); i++) {
         if (event_handlers[i].ptr == ptr && event_handlers[i].data == data) {
             event_handlers.erase(event_handlers.begin() + i);
-            return;
+            return true;
         }
     }
+    return false;
 }
 
 void Window::checkEvents() {

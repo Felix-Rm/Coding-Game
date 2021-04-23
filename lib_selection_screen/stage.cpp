@@ -25,6 +25,7 @@ Stage::Stage(Window *window, std::string path, int stage_number, float scale, Wi
 
 // Stage::Stage() : Drawable({0, 0}, {0, 0}){};
 Stage::~Stage() {
+    window->removeEventHandler(contextMenu, &level_executor_info[num_buttons]);
     printf("stage %p deleted\n", this);
 };
 
@@ -47,9 +48,14 @@ void Stage::load() {
     button_text_size = button_height * 0.6;
     button_outline_size = button_width * 0.05;
 
-    level_executor_info.resize(num_buttons);
+    level_executor_info.resize(num_buttons + 1);
     level_buttons.resize(num_buttons);
     placeButtons();
+
+    window->removeEventHandler(contextMenu, &level_executor_info[0]);
+
+    if (num_buttons == 0)
+        window->addEventHandler(contextMenu, &level_executor_info[0], 1, sf::Event::MouseButtonPressed);
 }
 
 void Stage::placeButtons() {
@@ -71,6 +77,8 @@ void Stage::placeButtons() {
         //printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }
 
+    level_executor_info[num_buttons] = {this, -1};
+
     setPosition(this->pos.x, this->pos.y);
 }
 
@@ -88,13 +96,9 @@ void Stage::setPosition(float x, float y) {
         level_buttons[i].setPosition(x, y);
     }
 
-    if (btn_add) {
-        int col_num = num_buttons % num_columns;
-        int row_num = num_buttons / num_columns;
-        float x = pos.x - button_width / 2.0 + stage_size.width / 2.0 - button_spacing_x * ((num_columns / 2.0) - col_num - 0.5);
-        float y = pos.y - button_height / 2.0 + stage_size.height / 2.0 - button_spacing_y * ((num_rows / 2.0) - row_num - 0.5);
-
-        btn_add->setPosition(x, y);
+    if (context) {
+        delete context;
+        context = nullptr;
     }
 }
 
@@ -104,7 +108,7 @@ void Stage::render() {
     for (size_t i = 0; i < this->level_buttons.size(); i++)
         this->level_buttons[i].render();
 
-    if (btn_add) btn_add->render();
+    if (context) context->render();
 }
 
 bool Stage::run_level(sf::Event &event, void *data) {
@@ -143,36 +147,105 @@ bool Stage::run_level(sf::Event &event, void *data) {
     return true;
 }
 
+bool Stage::contextMenu(sf::Event &event, void *data) {
+    auto info = (std::pair<Stage *, int> *)data;
+    Stage *obj = info->first;
+
+    if (info->second == -1 && (!obj->background.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition()) || event.mouseButton.button != sf::Mouse::Button::Right)) {
+        return false;
+    }
+
+    float padding = 10;
+    int num_buttons = info->second == -1 ? 1 : 3;
+    sf::Vector2f context_button_size = {260, 40};
+    sf::Vector2f context_size = {context_button_size.x + padding * 2, (context_button_size.y + padding) * num_buttons + padding};
+
+    sf::Vector2f button_pos = {padding, padding};
+
+    if (obj->context) delete obj->context;
+    obj->context = new Dialog(&obj->getWindow(), (sf::Vector2f)sf::Mouse::getPosition(), context_size, 2, GameStyle::DARK_GRAY);
+
+    TextButton *btn;
+
+    if (info->second == -1) {
+        btn = obj->context->addButton(button_pos, context_button_size, "Add Level", context_button_size.y * 0.6, 2, GameStyle::LIGHT_GRAY, GameStyle::GREEN);
+        btn->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(data, addLevel));
+        button_pos.y += context_button_size.y + padding;
+    } else {
+        btn = obj->context->addButton(button_pos, context_button_size, "Delete Level", context_button_size.y * 0.6, 2, GameStyle::LIGHT_GRAY, GameStyle::RED);
+        btn->setEventHandler(sf::Mouse::Button::Middle, Window::createEventHandler(data, deleteLevel));
+        button_pos.y += context_button_size.y + padding;
+
+        btn = obj->context->addButton(button_pos, context_button_size, "Add Level (left)", context_button_size.y * 0.6, 2, GameStyle::LIGHT_GRAY, GameStyle::GREEN);
+        btn->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(data, addLevelLeft));
+        button_pos.y += context_button_size.y + padding;
+
+        btn = obj->context->addButton(button_pos, context_button_size, "Add Level (right)", context_button_size.y * 0.6, 2, GameStyle::LIGHT_GRAY, GameStyle::GREEN);
+        btn->setEventHandler(sf::Mouse::Button::Middle, Window::createEventHandler(data, addLevelRight));
+    }
+
+    return true;
+}
+
+bool Stage::deleteLevel(sf::Event &event, void *data) {
+    auto info = (std::pair<Stage *, int> *)data;
+    auto obj = info->first;
+
+    if (std::filesystem::exists(info->first->path + std::to_string(info->second)))
+        std::filesystem::remove_all(info->first->path + std::to_string(info->second));
+
+    obj->shiftLevels(info->second + 1, obj->num_buttons, -1);
+
+    std::ofstream stage_info(obj->path + "stage.info");
+    stage_info << obj->num_buttons - 1;
+    stage_info.close();
+
+    obj->load();
+
+    return true;
+}
+
 bool Stage::addLevel(sf::Event &event, void *data) {
-    Stage *obj = (Stage *)data;
+    auto info = (std::pair<Stage *, int> *)data;
+    auto obj = info->first;
+
+    obj->shiftLevels(info->second + 1, obj->num_buttons, 1);
 
     std::ofstream stage_info(obj->path + "stage.info");
     stage_info << obj->num_buttons + 1;
     stage_info.close();
 
     obj->load();
+
     return true;
+}
+
+bool Stage::addLevelLeft(sf::Event &event, void *data) {
+}
+bool Stage::addLevelRight(sf::Event &event, void *data) {
+}
+
+void Stage::shiftLevels(int start, int end, int by) {
+    for (int i = start; i < end; i++) {
+        std::filesystem::rename(path + std::to_string(i), path + std::to_string(i + by));
+    }
 }
 
 void Stage::activateEditMode(bool a) {
     edit_mode_activated = a;
+
     if (edit_mode_activated) {
-        if (num_buttons < num_columns * num_rows && !btn_add) {
-            btn_add = new TextButton(window, {0, 0}, {button_width, button_height}, "+", button_text_size);
-            btn_add->setOutline(button_outline_size);
-            btn_add->setTextColor(GameStyle::LIGHT_GRAY);
-            btn_add->setBgColor(GameStyle::GREEN);
-            btn_add->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this, Stage::addLevel));
-            setPosition(pos.x, pos.y);
-        }
-
         for (int i = 0; i < num_buttons; i++) {
-            button.setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(level_executor_info[i] ,Stage::deleteLevel);
+            level_buttons[i].setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(&level_executor_info[i], Stage::contextMenu));
         }
-    }
+    } else {
+        for (int i = 0; i < num_buttons; i++) {
+            level_buttons[i].setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(nullptr, Window::event_noop));
+        }
 
-    if (btn_add && (num_buttons >= num_columns * num_rows || !edit_mode_activated)) {
-        delete btn_add;
-        btn_add = nullptr;
+        if (context) {
+            delete context;
+            context = nullptr;
+        }
     }
 };

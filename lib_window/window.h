@@ -21,7 +21,7 @@ class Window : public sf::RenderWindow {
     Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style);
 
     void addEventHandler(event_handler_fnk_t ptr, void *data, int numEvents...);
-    void removeEventHandler(event_handler_fnk_t ptr, void *data);
+    bool removeEventHandler(event_handler_fnk_t ptr, void *data);
 
     sf::VideoMode getVideoMode() { return video_mode; };
     sf::Uint32 getStyle() { return style; };

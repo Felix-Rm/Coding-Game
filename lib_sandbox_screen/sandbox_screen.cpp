@@ -46,14 +46,14 @@ bool SandboxScreen::onEditToggle(sf::Event &event, void *data) {
     SandboxScreen *obj = (SandboxScreen *)data;
     obj->edit_activated = !obj->edit_activated;
 
-    for (auto &stage : obj->stages) stage.second->activateAddButton(obj->edit_activated);
+    for (auto &stage : obj->stages) stage.second->activateEditMode(obj->edit_activated);
 
     obj->btn_edit.setBgColor(obj->edit_activated ? GameStyle::GREEN : GameStyle::GRAY);
     return true;
 }
 
 void SandboxScreen::onStageLoad(Stage *stage) {
-    stage->activateAddButton(edit_activated);
+    stage->activateEditMode(edit_activated);
 }
 
 bool SandboxScreen::run_level(sf::Event &event, void *data) {
