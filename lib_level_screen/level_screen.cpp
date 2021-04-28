@@ -262,7 +262,7 @@ bool LevelScreen::onMouseMove(sf::Event &event, void *data) {
 
     obj->mouse_pos = {(float)event.mouseMove.x, (float)event.mouseMove.y};
 
-    if (obj->mouse_down[sf::Mouse::Button::Left]) {
+    if (obj->mouse_clicked[sf::Mouse::Button::Left]) {
         sf::Vector2f drag_dist = {event.mouseMove.x - obj->last_mouse_click_pos.x, event.mouseMove.y - obj->last_mouse_click_pos.y};
         obj->origin.x = obj->prev_origin.x + drag_dist.x;
         obj->origin.y = obj->prev_origin.y + drag_dist.y;
@@ -278,8 +278,6 @@ bool LevelScreen::onMouseButton(sf::Event &event, void *data) {
 
     if (obj->level_complete_dialog != nullptr)
         return false;
-
-    obj->mouse_down[event.mouseButton.button] = event.type == sf::Event::MouseButtonPressed;
 
     if (event.mouseButton.button != sf::Mouse::Button::Left)
         return false;

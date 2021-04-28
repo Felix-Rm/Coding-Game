@@ -8,8 +8,9 @@ Dialog::Dialog(Window* window, sf::Vector2f pos, sf::Vector2f size, int outline_
     this->background.setOutlineColor({(sf::Uint8)(bg_color.r * 0.5), (sf::Uint8)(bg_color.g * 0.5), (sf::Uint8)(bg_color.b * 0.5)});
 };
 
-Dialog::~Dialog(){
-
+Dialog::~Dialog() {
+    for (auto& ptr : items)
+        delete ptr;
 };
 
 void Dialog::setPosition(float x, float y) {

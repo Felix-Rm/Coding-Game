@@ -22,11 +22,8 @@ Window::Window(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : 
     },
                     this, 1, sf::Event::Resized);
 
-    addEventHandler([](sf::Event &event, void *data) {
-        ((Window *)data)->close();
-        return true;
-    },
-                    this, 1, sf::Event::Closed);
+    addEventHandler(Window::event_close, this, 1, sf::Event::Closed);
+    addEventHandler(Window::event_track_mouse, this, 3, sf::Event::MouseMoved, sf::Event::MouseButtonReleased, sf::Event::MouseButtonPressed);
 }
 
 Window::event_handler_t Window::createEventHandler(void *data, event_handler_fnk_t ptr) {
@@ -51,13 +48,16 @@ void Window::addEventHandler(event_handler_fnk_t ptr, void *data, int numEvents,
     event_handlers.push_back(handler);
 }
 
-bool Window::removeEventHandler(bool (*ptr)(sf::Event &, void *), void *data) {
+bool Window::removeEventHandler(Window::event_handler_fnk_t ptr, void *data) {
     for (size_t i = 0; i < event_handlers.size(); i++) {
         if (event_handlers[i].ptr == ptr && event_handlers[i].data == data) {
             event_handlers.erase(event_handlers.begin() + i);
+            printf("found event handler to remove\n");
             return true;
         }
     }
+
+    printf("could not find event handler to remove\n");
     return false;
 }
 
@@ -96,4 +96,22 @@ bool Window::run() {
     display();
 
     return isOpen();
+}
+
+bool Window::event_track_mouse(sf::Event &event, void *data) {
+    Window *obj = (Window *)data;
+
+    if (event.type == sf::Event::EventType::MouseMoved) {
+        obj->mouse_pos = {event.mouseMove.x, event.mouseMove.y};
+    }
+
+    if (event.type == sf::Event::EventType::MouseButtonPressed) {
+        obj->mouse_clicked[event.mouseButton.button] = true;
+    }
+
+    if (event.type == sf::Event::EventType::MouseButtonReleased) {
+        obj->mouse_clicked[event.mouseButton.button] = false;
+    }
+
+    return false;
 }

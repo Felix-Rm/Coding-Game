@@ -12,6 +12,13 @@ class Drawable {
 
     Window* window;
 
+    void copyFrom(const Drawable& other) {
+        pos = other.pos;
+        size = other.size;
+        window = other.window;
+        orig_size = other.orig_size;
+    }
+
    public:
     Drawable(){};
 
@@ -23,24 +30,20 @@ class Drawable {
     }
 
     Drawable(Drawable&& other) {
-        pos = other.pos;
-        size = other.size;
-        window = other.window;
-        orig_size = other.orig_size;
+        copyFrom(other);
     }
 
-    Drawable(Drawable& other) {
-        pos = other.pos;
-        size = other.size;
-        window = other.window;
-        orig_size = other.orig_size;
+    Drawable(const Drawable& other) {
+        copyFrom(other);
     }
 
     Drawable& operator=(Drawable&& other) {
-        window = other.window;
-        pos = other.pos;
-        size = other.size;
-        orig_size = other.orig_size;
+        copyFrom(other);
+        return *this;
+    }
+
+    Drawable& operator=(const Drawable& other) {
+        copyFrom(other);
         return *this;
     }
 

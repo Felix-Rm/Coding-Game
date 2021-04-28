@@ -11,7 +11,7 @@
 
 class Stage : public Drawable {
    public:
-    Stage(Window *window, std::string path, int stage_number, float scale, Window::event_handler_fnk_t event_handler);
+    Stage(Window *window, std::string load_path, std::string save_path, int stage_number, float scale, Window::event_handler_fnk_t event_handler);
     ~Stage();
 
     void render() override;
@@ -26,7 +26,7 @@ class Stage : public Drawable {
 
     void activateEditMode(bool a = true);
 
-    std::string path;
+    std::string load_path, save_path;
 
     typedef struct {
         int level_id;

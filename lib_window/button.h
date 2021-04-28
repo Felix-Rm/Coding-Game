@@ -7,18 +7,17 @@ class Button : public Drawable {
     Button() : Drawable(nullptr, {0, 0}, {0, 0}) {}
     Button(Window *window, sf::Vector2f pos, sf::Vector2f size);
 
-    Button(const Button &&other) : Drawable(other.window, other.pos, other.size) {
+    Button(Button &&other) : Drawable(other.window, other.pos, other.size) {
         copyFrom(other);
 
-        window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
-        window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
+        other.unregisterEvents();
+        registerEvents();
     }
 
     Button(const Button &other) : Drawable(other.window, other.pos, other.size) {
         copyFrom(other);
 
-        window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
-        window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
+        registerEvents();
     }
 
     Button &operator=(Button &&other) {
@@ -26,8 +25,18 @@ class Button : public Drawable {
 
         copyFrom(other);
 
-        window->addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
-        window->addEventHandler(onMousePress, this, 1, sf::Event::MouseButtonPressed);
+        other.unregisterEvents();
+        registerEvents();
+
+        return *this;
+    }
+
+    Button &operator=(const Button &other) {
+        Drawable::operator=(other);
+
+        copyFrom(other);
+
+        registerEvents();
 
         return *this;
     }
@@ -64,5 +73,7 @@ class Button : public Drawable {
     sf::Color bg_color;
 
    private:
+    void registerEvents();
+    void unregisterEvents();
     void copyFrom(const Button &other);
 };

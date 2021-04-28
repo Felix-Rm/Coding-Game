@@ -50,10 +50,8 @@ class LevelScreen : public Window {
     float scale = 1;
     sf::Vector2f origin = {0, 0};
 
-    sf::Vector2f mouse_pos = {0, 0};
     sf::Vector2f last_mouse_click_pos = {0, 0};
     sf::Vector2f prev_origin = {0, 0};
-    bool mouse_down[3] = {false};
 
     std::vector<std::vector<Tile *>> map;
     std::vector<Bot *> bots;

@@ -12,24 +12,32 @@ class ImageButton : public Button {
 
     void loadImage();
 
-    void copyFrom(ImageButton &other);
+    void copyFrom(const ImageButton &other);
 
    public:
     ImageButton() : Button() {}
     ImageButton(Window *window, sf::Vector2f pos, sf::Vector2f size, GameStyle::Icon icon_id);
 
-    ImageButton(ImageButton &&other) : Button(other) {
+    ImageButton(ImageButton &&other) : Button(std::move(other)) {
         copyFrom(other);
         loadImage();
     }
 
-    ImageButton(ImageButton &other) : Button(other) {
+    ImageButton(const ImageButton &other) : Button(other) {
         copyFrom(other);
         loadImage();
     }
 
     ImageButton &operator=(ImageButton &&other) {
         Button::operator=(std::move(other));
+
+        copyFrom(other);
+        loadImage();
+        return *this;
+    }
+
+    ImageButton &operator=(const ImageButton &other) {
+        Button::operator=(other);
 
         copyFrom(other);
         loadImage();

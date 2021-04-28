@@ -22,7 +22,7 @@ void ImageButton::loadImage() {
     this->image.setPosition(image_pos);
 }
 
-void ImageButton::copyFrom(ImageButton &other) {
+void ImageButton::copyFrom(const ImageButton &other) {
     icon_id = other.icon_id;
     image_scale = other.image_scale;
 }

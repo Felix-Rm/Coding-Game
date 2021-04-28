@@ -1,20 +1,20 @@
 #include "stage.h"
 sf::Color Stage::progress_colors[4];
 
-Stage::Stage(Window *window, std::string path, int stage_number, float scale, Window::event_handler_fnk_t event_handler) : Drawable(window, {0, 0}, (sf::Vector2f)window->getSize()) {
+Stage::Stage(Window *window, std::string load_path, std::string save_path, int stage_number, float scale, Window::event_handler_fnk_t event_handler) : Drawable(window, {0, 0}, (sf::Vector2f)window->getSize()) {
     progress_colors[0] = GameStyle::DARK_GRAY;
     progress_colors[1] = GameStyle::BRONZE;
     progress_colors[2] = GameStyle::GRAY;
     progress_colors[3] = GameStyle::GOLD;
 
-    this->path = path + std::to_string(stage_number) + '/';
+    this->load_path = load_path + std::to_string(stage_number) + '/';
+    this->save_path = save_path + std::to_string(stage_number) + '/';
+
     this->level_creation_provider = event_handler;
     this->stage_number = stage_number;
 
-    printf("%s\n", this->path.c_str());
-
-    if (!this->background_tex.loadFromFile(this->path + "background.png"))
-        throw std::runtime_error("[Stage] Could not open background.png: " + this->path + "background.png");
+    if (!this->background_tex.loadFromFile(this->load_path + "background.png"))
+        throw std::runtime_error("[Stage] Could not open background.png: " + this->load_path + "background.png");
 
     this->background = sf::Sprite(this->background_tex);
 
@@ -30,7 +30,9 @@ Stage::~Stage() {
 };
 
 void Stage::load() {
-    std::ifstream stage_info(this->path + "stage.info");
+    window->removeEventHandler(contextMenu, &level_executor_info[0]);
+
+    std::ifstream stage_info(this->load_path + "stage.info");
     stage_info >> this->num_buttons;
     stage_info.close();
 
@@ -48,11 +50,13 @@ void Stage::load() {
     button_text_size = button_height * 0.6;
     button_outline_size = button_width * 0.05;
 
+    level_executor_info.clear();
     level_executor_info.resize(num_buttons + 1);
-    level_buttons.resize(num_buttons);
-    placeButtons();
 
-    window->removeEventHandler(contextMenu, &level_executor_info[0]);
+    level_buttons.clear();
+    level_buttons.resize(num_buttons);
+
+    placeButtons();
 
     if (num_buttons == 0)
         window->addEventHandler(contextMenu, &level_executor_info[0], 1, sf::Event::MouseButtonPressed);
@@ -64,7 +68,7 @@ void Stage::placeButtons() {
         snprintf(title, sizeof(title), "%dx%02x", stage_number, i);
 
         bool a, b, c;
-        int level_progress = LevelScreen::checkState("_user/gamesave/" + this->path + std::to_string(i) + "/completion_state.info", a, b, c);
+        int level_progress = LevelScreen::checkState(this->save_path + std::to_string(i) + "/completion_state.info", a, b, c);
         sf::Color button_color = progress_colors[level_progress];
 
         level_executor_info[i] = {this, i};
@@ -73,6 +77,9 @@ void Stage::placeButtons() {
         level_buttons[i].setTextColor(GameStyle::LIGHT_GRAY);
         level_buttons[i].setBgColor(button_color);
         level_buttons[i].setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(&(level_executor_info[i]), run_level));
+
+        if (edit_mode_activated)
+            level_buttons[i].setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(&level_executor_info[i], Stage::contextMenu));
 
         //printf("[Stage%d]: x: %f; y: %f; (i: %d)\n", stage_number, x, y, i);
     }
@@ -124,7 +131,7 @@ bool Stage::run_level(sf::Event &event, void *data) {
 
         level_creation_data creation_data;
         creation_data.level_id = current_level_id;
-        creation_data.path = info->first->path;
+        creation_data.path = info->first->load_path;
         creation_data.level_window = (Window **)&window;
         creation_data.selection_window = &info->first->getWindow();
 
@@ -151,7 +158,7 @@ bool Stage::contextMenu(sf::Event &event, void *data) {
     auto info = (std::pair<Stage *, int> *)data;
     Stage *obj = info->first;
 
-    if (info->second == -1 && (!obj->background.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition()) || event.mouseButton.button != sf::Mouse::Button::Right)) {
+    if (info->second == -1 && (!obj->background.getGlobalBounds().contains(obj->window->mouse_pos) || event.mouseButton.button != sf::Mouse::Button::Right)) {
         return false;
     }
 
@@ -163,7 +170,7 @@ bool Stage::contextMenu(sf::Event &event, void *data) {
     sf::Vector2f button_pos = {padding, padding};
 
     if (obj->context) delete obj->context;
-    obj->context = new Dialog(&obj->getWindow(), (sf::Vector2f)sf::Mouse::getPosition(), context_size, 2, GameStyle::DARK_GRAY);
+    obj->context = new Dialog(&obj->getWindow(), obj->window->mouse_pos, context_size, 2, GameStyle::DARK_GRAY);
 
     TextButton *btn;
 
@@ -191,12 +198,15 @@ bool Stage::deleteLevel(sf::Event &event, void *data) {
     auto info = (std::pair<Stage *, int> *)data;
     auto obj = info->first;
 
-    if (std::filesystem::exists(info->first->path + std::to_string(info->second)))
-        std::filesystem::remove_all(info->first->path + std::to_string(info->second));
+    if (std::filesystem::exists(info->first->load_path + std::to_string(info->second)))
+        std::filesystem::remove_all(info->first->load_path + std::to_string(info->second));
+
+    if (std::filesystem::exists(info->first->save_path + std::to_string(info->second)))
+        std::filesystem::remove_all(info->first->save_path + std::to_string(info->second));
 
     obj->shiftLevels(info->second + 1, obj->num_buttons, -1);
 
-    std::ofstream stage_info(obj->path + "stage.info");
+    std::ofstream stage_info(obj->load_path + "stage.info");
     stage_info << obj->num_buttons - 1;
     stage_info.close();
 
@@ -211,7 +221,7 @@ bool Stage::addLevel(sf::Event &event, void *data) {
 
     obj->shiftLevels(info->second + 1, obj->num_buttons, 1);
 
-    std::ofstream stage_info(obj->path + "stage.info");
+    std::ofstream stage_info(obj->load_path + "stage.info");
     stage_info << obj->num_buttons + 1;
     stage_info.close();
 
@@ -220,32 +230,28 @@ bool Stage::addLevel(sf::Event &event, void *data) {
     return true;
 }
 
-bool Stage::addLevelLeft(sf::Event &event, void *data) {
-}
 bool Stage::addLevelRight(sf::Event &event, void *data) {
+    return addLevel(event, data);
+}
+
+bool Stage::addLevelLeft(sf::Event &event, void *data) {
+    auto info = *(std::pair<Stage *, int> *)data;
+    info.second--;
+    return addLevel(event, &info);
 }
 
 void Stage::shiftLevels(int start, int end, int by) {
     for (int i = start; i < end; i++) {
-        std::filesystem::rename(path + std::to_string(i), path + std::to_string(i + by));
+        if (std::filesystem::exists(load_path + std::to_string(i)))
+            std::filesystem::rename(load_path + std::to_string(i), load_path + std::to_string(i + by));
+
+        if (std::filesystem::exists(save_path + std::to_string(i)))
+            std::filesystem::rename(save_path + std::to_string(i), save_path + std::to_string(i + by));
     }
 }
 
 void Stage::activateEditMode(bool a) {
     edit_mode_activated = a;
 
-    if (edit_mode_activated) {
-        for (int i = 0; i < num_buttons; i++) {
-            level_buttons[i].setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(&level_executor_info[i], Stage::contextMenu));
-        }
-    } else {
-        for (int i = 0; i < num_buttons; i++) {
-            level_buttons[i].setEventHandler(sf::Mouse::Button::Right, Window::createEventHandler(nullptr, Window::event_noop));
-        }
-
-        if (context) {
-            delete context;
-            context = nullptr;
-        }
-    }
+    load();
 };

@@ -29,7 +29,7 @@ bool LevelEditorScreen::onMouseButton(sf::Event& event, void* data) {
         return true;
     }
 
-    if (obj->mouse_down[1])
+    if (obj->mouse_clicked[sf::Mouse::Button::Right])
         return obj->placeTileAtMousePos();
 
     return false;
@@ -38,7 +38,7 @@ bool LevelEditorScreen::onMouseButton(sf::Event& event, void* data) {
 bool LevelEditorScreen::onMouseMove(sf::Event& event, void* data) {
     LevelEditorScreen* obj = (LevelEditorScreen*)data;
 
-    if (obj->mouse_down[1])
+    if (obj->mouse_clicked[sf::Mouse::Button::Right])
         obj->placeTileAtMousePos();
 
     if (event.type == sf::Event::MouseWheelMoved || event.type == sf::Event::MouseMoved)

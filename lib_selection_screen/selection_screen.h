@@ -28,7 +28,7 @@ class SelectionScreen : public Window {
 
     int y_scroll = 0;
 
-    std::string stage_path;
+    std::string stage_load_path, stage_save_path;
 
     Window::event_handler_fnk_t onCreateLevel;
 

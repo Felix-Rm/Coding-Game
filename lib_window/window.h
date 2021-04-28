@@ -39,6 +39,9 @@ class Window : public sf::RenderWindow {
     float fps = 0;
     float mspf = 0;
 
+    sf::Vector2f mouse_pos = {0, 0};
+    bool mouse_clicked[3] = {false, false, false};
+
    protected:
     sf::Uint32 style;
     sf::VideoMode video_mode;
@@ -53,6 +56,8 @@ class Window : public sf::RenderWindow {
     void checkEvents();
 
    private:
+    static bool event_track_mouse(sf::Event &, void *);
+
     sf::Text framerate_display;
     sf::Clock clock;
 };

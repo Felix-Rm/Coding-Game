@@ -17,7 +17,7 @@ class TextButton : public Button {
     TextButton() : Button() {}
     TextButton(Window *window, sf::Vector2f pos, sf::Vector2f size, std::string text, float text_size);
 
-    TextButton(TextButton &&other) : Button(other) {
+    TextButton(TextButton &&other) : Button(std::move(other)) {
         copyFrom(other);
         loadText();
     };
@@ -29,6 +29,13 @@ class TextButton : public Button {
 
     TextButton &operator=(TextButton &&other) {
         Button::operator=(std::move(other));
+        copyFrom(other);
+        loadText();
+        return *this;
+    }
+
+    TextButton &operator=(const TextButton &other) {
+        Button::operator=(other);
         copyFrom(other);
         loadText();
         return *this;

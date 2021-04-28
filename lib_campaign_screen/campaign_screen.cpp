@@ -1,7 +1,9 @@
 #include "campaign_screen.h"
 
 CampaignScreen::CampaignScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style) : SelectionScreen(video_mode, title, style) {
-    this->stage_path = "_assets/stages/";
+    this->stage_load_path = "_assets/stages/";
+    this->stage_save_path = "_user/gamesave/_assets/stages/";
+
     this->onCreateLevel = run_level;
 
     std::ifstream stage_info("_assets/stages.info");
