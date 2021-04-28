@@ -3,7 +3,7 @@
 sf::Texture LevelScreen::star_textures[2][3];
 bool LevelScreen::textures_loaded = false;
 
-LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path) : Window(video_mode, title, style) {
+LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &load_path, std::string &save_path) : Window(video_mode, title, style) {
     if (!textures_loaded)
         loadTextures();
 
@@ -12,29 +12,28 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
 
     this->top_bar = new TopBar(this);
 
-    this->path = path + std::to_string(level_num) + '/';
+    this->load_path = load_path + std::to_string(level_num) + '/';
+    this->save_path = save_path + std::to_string(level_num) + '/';
 
-    if (!std::filesystem::exists(this->path + "level.info")) {
-        printf("creating not existing level\n");
-        std::filesystem::create_directories(this->path);
-        std::ofstream level_info(this->path + "level.info");
-        level_info << "1 1 1";
-        level_info.close();
+    if (!std::filesystem::exists(this->load_path + "level.info")) {
+        printf("creating not existing level info\n");
+        std::filesystem::create_directories(this->load_path);
+        std::filesystem::copy_file("_assets/presets/default_level.info", this->load_path + "level.info");
     }
 
-    std::ifstream level_info(this->path + "level.info");
+    if (!std::filesystem::exists(this->save_path + "code/")) {
+        printf("creating not existing level info\n");
+        std::filesystem::create_directories(this->save_path + "code/");
+        std::filesystem::copy("_assets/presets/default_code/", this->save_path + "code/");
+    }
+
+    std::ifstream level_info(this->load_path + "level.info");
     if (!level_info)
         throw std::runtime_error("could not open level info");
 
     level_info >> *this;
 
     level_info.close();
-
-    // for (int i = 0; i < num_bots; i++) {
-    //     int x, y;
-    //     level_info >> x >> y;
-    //     bots.push_back(new Bot(this, {(float)x * Tile::tex_size.y, (float)y * Tile::tex_size.y}, {(float)x, (float)y}, level_info, this));
-    // }
 
     addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
     addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
@@ -66,6 +65,15 @@ std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
     }
 
     obj.updatePosition();
+
+    for (size_t i = 0; i < obj.bots.size(); i++) {
+        std::string code_filename = obj.save_path + "code/robot_0x" + std::to_string(i) + ".cs";
+        if (!std::filesystem::exists(code_filename)) {
+            std::filesystem::copy_file("_assets/presets/robot.cs", code_filename);
+            std::string cmd = "sed 's/botnum/" + std::to_string(i) + "/g' " + code_filename;
+            system(cmd.c_str());
+        }
+    }
 
     return data;
 }
@@ -299,6 +307,26 @@ bool LevelScreen::onNextLevel(sf::Event &event, void *data) {
     return true;
 }
 
+bool LevelScreen::onPlay(sf::Event &event, void *data) {
+    LevelScreen *obj = (LevelScreen *)data;
+
+    obj->running = !obj->running;
+
+    if (obj->running) {
+    }
+
+    return true;
+}
+
+bool LevelScreen::onEditor(sf::Event &event, void *data) {
+    LevelScreen *obj = (LevelScreen *)data;
+
+    std::string command = "code " + obj->save_path + "code/ &";
+    system(command.c_str());
+
+    return true;
+}
+
 void LevelScreen::loadTextures() {
     for (int i = 0; i < 3; i++) {
         star_textures[0][i].loadFromFile("_assets/textures/stars/" + std::to_string(i) + "sw.png");
@@ -324,8 +352,6 @@ int LevelScreen::checkState(std::string filename, bool &completed, bool &energy,
 }
 
 bool LevelScreen::saveState() {
-    std::string save_path = "_user/gamesave/" + this->path;
-
     std::filesystem::create_directories(save_path);
 
     bool old_completed, old_energy, old_boni;

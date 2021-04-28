@@ -131,7 +131,8 @@ bool Stage::run_level(sf::Event &event, void *data) {
 
         level_creation_data creation_data;
         creation_data.level_id = current_level_id;
-        creation_data.path = info->first->load_path;
+        creation_data.load_path = info->first->load_path;
+        creation_data.save_path = info->first->save_path;
         creation_data.level_window = (Window **)&window;
         creation_data.selection_window = &info->first->getWindow();
 

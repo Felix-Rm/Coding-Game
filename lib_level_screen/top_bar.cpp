@@ -26,11 +26,13 @@ void TopBar::updatePosition() {
 
     update();
 
-    this->btn_play = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::PLAY);
-    this->btn_play.center();
+    this->btn_stop_play = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::PLAY);
+    this->btn_stop_play.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(window, LevelScreen::onPlay));
+    this->btn_stop_play.center();
 
-    this->btn_stop = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::STOP);
-    this->btn_stop.center();
+    this->btn_editor = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::EDITOR);
+    this->btn_editor.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(window, LevelScreen::onEditor));
+    this->btn_editor.center();
 
     this->btn_exit = ImageButton(this->window, {0, 0}, {this->text_size, this->text_size}, GameStyle::Icon::EXIT);
     this->btn_exit.setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(this->window, Window::event_close));
@@ -45,8 +47,8 @@ void TopBar::updatePosition() {
     this->btn_speed_minus.center();
 
     auto time_text_bounds = this->time_text.getLocalBounds();
-    auto btn_play_bounds = this->btn_play.getLocalBounds();
-    auto btn_stop_bounds = this->btn_stop.getLocalBounds();
+    auto btn_play_bounds = this->btn_stop_play.getLocalBounds();
+    auto btn_stop_bounds = this->btn_editor.getLocalBounds();
     auto btn_exit_bounds = this->btn_exit.getLocalBounds();
     auto speed_text_bounds = this->speed_text.getLocalBounds();
     auto btn_speed_plus_bounds = this->btn_speed_plus.getLocalBounds();
@@ -61,10 +63,10 @@ void TopBar::updatePosition() {
     this->time_text.setPosition(current_pos_x, common_pos_y - time_text_bounds.top / 2);
     current_pos_x += time_text_bounds.width + padding;
 
-    this->btn_play.setPosition(current_pos_x, common_pos_y);
+    this->btn_stop_play.setPosition(current_pos_x, common_pos_y);
     current_pos_x += btn_play_bounds.width + padding;
 
-    this->btn_stop.setPosition(current_pos_x, common_pos_y);
+    this->btn_editor.setPosition(current_pos_x, common_pos_y);
     current_pos_x += btn_stop_bounds.width + padding;
 
     this->btn_exit.setPosition(current_pos_x, common_pos_y);
@@ -85,8 +87,8 @@ void TopBar::render() {
     this->window->draw(this->speed_text);
     this->window->draw(this->time_text);
 
-    btn_play.render();
-    btn_stop.render();
+    btn_stop_play.render();
+    btn_editor.render();
     btn_exit.render();
 
     btn_speed_plus.render();

@@ -40,7 +40,7 @@ bool CampaignScreen::onMouseScroll(sf::Event &event, void *data) {
 bool CampaignScreen::run_level(sf::Event &event, void *data) {
     Stage::level_creation_data *creation_data = (Stage::level_creation_data *)data;
 
-    *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
+    *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->load_path, creation_data->save_path);
 
     return true;
 }

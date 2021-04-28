@@ -1,7 +1,7 @@
 #include "level_editor_screen.h"
 
-LevelEditorScreen::LevelEditorScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string& path)
-    : LevelScreen(video_mode, title, style, level_num, path) {
+LevelEditorScreen::LevelEditorScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string& load_path, std::string& save_path)
+    : LevelScreen(video_mode, title, style, level_num, load_path, save_path) {
     this->frame = sf::RectangleShape({0, 0});
     this->frame.setFillColor(sf::Color::Transparent);
     this->frame.setOutlineThickness(5);
@@ -134,7 +134,7 @@ bool LevelEditorScreen::onKeyEvent(sf::Event& event, void* data) {
 }
 
 void LevelEditorScreen::save() {
-    std::ofstream file(this->path + "level.info");
+    std::ofstream file(this->load_path + "level.info");
     file << *this;
     file.close();
 }

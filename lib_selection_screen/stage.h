@@ -30,7 +30,8 @@ class Stage : public Drawable {
 
     typedef struct {
         int level_id;
-        std::string path;
+        std::string load_path;
+        std::string save_path;
         Window *selection_window;
         Window **level_window;
     } level_creation_data;

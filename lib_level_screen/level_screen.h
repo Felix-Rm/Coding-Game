@@ -28,7 +28,7 @@ class BonusTile;
 
 class LevelScreen : public Window {
    public:
-    LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &path);
+    LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string &load_path, std::string &save_path);
 
     void activateManualControlls();
 
@@ -44,7 +44,9 @@ class LevelScreen : public Window {
     bool next_level_flag = false;
 
    protected:
-    std::string path;
+    bool running = false;
+
+    std::string load_path, save_path;
     sf::Vector2u size;
 
     float scale = 1;
@@ -93,4 +95,6 @@ class LevelScreen : public Window {
     static bool onScroll(sf::Event &, void *);
 
     static bool onNextLevel(sf::Event &, void *);
+    static bool onPlay(sf::Event &, void *);
+    static bool onEditor(sf::Event &, void *);
 };

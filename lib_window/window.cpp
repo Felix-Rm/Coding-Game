@@ -52,12 +52,9 @@ bool Window::removeEventHandler(Window::event_handler_fnk_t ptr, void *data) {
     for (size_t i = 0; i < event_handlers.size(); i++) {
         if (event_handlers[i].ptr == ptr && event_handlers[i].data == data) {
             event_handlers.erase(event_handlers.begin() + i);
-            printf("found event handler to remove\n");
             return true;
         }
     }
-
-    printf("could not find event handler to remove\n");
     return false;
 }
 

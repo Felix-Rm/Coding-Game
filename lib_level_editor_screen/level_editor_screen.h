@@ -30,5 +30,5 @@ class LevelEditorScreen : public LevelScreen {
     static bool onKeyEvent(sf::Event& event, void* data);
 
    public:
-    LevelEditorScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string& path);
+    LevelEditorScreen(sf::VideoMode video_mode, std::string title, sf::Uint32 style, int level_num, std::string& load_path, std::string& save_path);
 };

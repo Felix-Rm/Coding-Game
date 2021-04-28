@@ -63,9 +63,9 @@ bool SandboxScreen::run_level(sf::Event &event, void *data) {
     SandboxScreen *obj = (SandboxScreen *)creation_data->selection_window;
 
     if (obj->edit_activated)
-        *(creation_data->level_window) = new LevelEditorScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
+        *(creation_data->level_window) = new LevelEditorScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->load_path, creation_data->save_path);
     else {
-        *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->path);
+        *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->load_path, creation_data->save_path);
 
         // don't look at this
         (*((LevelScreen **)creation_data->level_window))->activateManualControlls();
