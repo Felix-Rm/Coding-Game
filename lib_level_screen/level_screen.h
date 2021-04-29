@@ -66,7 +66,7 @@ class LevelScreen : public Window {
 
     float elapsed_time = 0;
 
-    TopBar *top_bar;
+    TopBar *top_bar = nullptr;
     Dialog *level_complete_dialog = nullptr;
 
     bool level_completed = false;
@@ -81,6 +81,8 @@ class LevelScreen : public Window {
     void setup() override;
     void render() override;
     void updatePosition();
+
+    void load();
 
     bool saveState();
 

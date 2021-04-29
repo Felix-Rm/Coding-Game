@@ -10,7 +10,7 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     Tile::loadTextures();
     Bot::loadTextures();
 
-    this->top_bar = new TopBar(this);
+     top_bar = new TopBar(this);
 
     this->load_path = load_path + std::to_string(level_num) + '/';
     this->save_path = save_path + std::to_string(level_num) + '/';
@@ -27,6 +27,24 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
         std::filesystem::copy("_assets/presets/default_code/", this->save_path + "code/");
     }
 
+    load();
+
+    addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
+    addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
+    addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
+}
+
+void LevelScreen::load() {
+    elapsed_time = 0;
+    top_bar->update();
+
+    for (auto &row : map) {
+        for (auto &cell : row)
+            delete cell;
+        row.clear();
+    }
+    map.clear();
+
     std::ifstream level_info(this->load_path + "level.info");
     if (!level_info)
         throw std::runtime_error("could not open level info");
@@ -34,10 +52,6 @@ LevelScreen::LevelScreen(sf::VideoMode video_mode, std::string title, sf::Uint32
     level_info >> *this;
 
     level_info.close();
-
-    addEventHandler(onMouseMove, this, 1, sf::Event::MouseMoved);
-    addEventHandler(onScroll, this, 1, sf::Event::MouseWheelMoved);
-    addEventHandler(onMouseButton, this, 2, sf::Event::MouseButtonPressed, sf::Event::MouseButtonReleased);
 }
 
 std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
@@ -70,7 +84,7 @@ std::ifstream &operator>>(std::ifstream &data, LevelScreen &obj) {
         std::string code_filename = obj.save_path + "code/robot_0x" + std::to_string(i) + ".cs";
         if (!std::filesystem::exists(code_filename)) {
             std::filesystem::copy_file("_assets/presets/robot.cs", code_filename);
-            std::string cmd = "sed 's/botnum/" + std::to_string(i) + "/g' " + code_filename;
+            std::string cmd = "sed -i s/botnum/" + std::to_string(i) + "/g " + code_filename;
             system(cmd.c_str());
         }
     }
@@ -147,6 +161,35 @@ void LevelScreen::setup() {
 }
 
 void LevelScreen::render() {
+    if (running) {
+        for (size_t i = 0; i < bots.size(); i++) {
+            std::string folder = "_assets/communication/bot" + std::to_string(i) + '/';
+
+            if (std::filesystem::exists(folder + "drive_forward")) {
+                bots[i]->drive(Bot::forward);
+                bool b = std::filesystem::remove(folder + "drive_forward");
+                printf("driving forward %d\n", b);
+            } else if (std::filesystem::exists(folder + "drive_backward")) {
+                printf("driving backward\n");
+                bots[i]->drive(Bot::backward);
+                std::filesystem::remove(folder + "drive_backward");
+            } else if (std::filesystem::exists(folder + "rotate_ccw")) {
+                printf("rotating counterclockwise\n");
+                bots[i]->rotate(Bot::counterclockwise);
+                std::filesystem::remove(folder + "rotate_ccw");
+            } else if (std::filesystem::exists(folder + "rotate_cw")) {
+                printf("rotating clockwise\n");
+                bots[i]->rotate(Bot::clockwise);
+                std::filesystem::remove(folder + "rotate_cw");
+            }
+
+            if (bots[i]->is_just_done()) {
+                std::ofstream ofs(folder + "done");
+                ofs.close();
+            }
+        }
+    }
+
     clear();
     boni_collected = true;
 
@@ -313,6 +356,12 @@ bool LevelScreen::onPlay(sf::Event &event, void *data) {
     obj->running = !obj->running;
 
     if (obj->running) {
+        std::string cmd = "bash _assets/presets/run_code.sh " + obj->save_path + "code/";
+        system(cmd.c_str());
+        obj->top_bar->btn_stop_play.setImage(GameStyle::Icon::STOP);
+    } else {
+        obj->load();
+        obj->top_bar->btn_stop_play.setImage(GameStyle::Icon::PLAY);
     }
 
     return true;

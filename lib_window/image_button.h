@@ -53,6 +53,11 @@ class ImageButton : public Button {
         loadImage();
     }
 
+    void setImage(GameStyle::Icon i) {
+        icon_id = i;
+        loadImage();
+    }
+
     void render() override;
     void setPosition(float x, float y) override;
     void shiftPosition(float dx, float dy) override;

@@ -30,7 +30,10 @@ class Window : public sf::RenderWindow {
 
     static event_handler_t createEventHandler(void *data, event_handler_fnk_t ptr);
 
-    static bool event_noop(sf::Event &, void *) { return true; };
+    static bool event_noop(sf::Event &, void *) {
+        return true;
+    };
+
     static bool event_close(sf::Event &, void *data) {
         ((Window *)data)->close();
         return true;

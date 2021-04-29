@@ -12,6 +12,8 @@ class LevelScreen;
 
 class TopBar : public Drawable {
    private:
+    friend LevelScreen;
+
     sf::Texture background_tex;
     sf::Sprite background;
     sf::Text time_text;

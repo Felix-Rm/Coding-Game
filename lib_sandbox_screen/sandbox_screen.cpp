@@ -48,7 +48,9 @@ bool SandboxScreen::onEditToggle(sf::Event &event, void *data) {
     SandboxScreen *obj = (SandboxScreen *)data;
     obj->edit_activated = !obj->edit_activated;
 
-    for (auto &stage : obj->stages) stage.second->activateEditMode(obj->edit_activated);
+    for (size_t i = 0; i < obj->num_stages; i++)
+        if (obj->stage_loaded[i])
+            obj->stages[i]->activateEditMode(obj->edit_activated);
 
     obj->btn_edit.setBgColor(obj->edit_activated ? GameStyle::GREEN : GameStyle::GRAY);
     return true;
@@ -68,7 +70,7 @@ bool SandboxScreen::run_level(sf::Event &event, void *data) {
         *(creation_data->level_window) = new LevelScreen(creation_data->selection_window->getVideoMode(), "Level " + std::to_string(creation_data->level_id), creation_data->selection_window->getStyle(), creation_data->level_id, creation_data->load_path, creation_data->save_path);
 
         // don't look at this
-        (*((LevelScreen **)creation_data->level_window))->activateManualControlls();
+        // (*((LevelScreen **)creation_data->level_window))->activateManualControlls();
     }
     return true;
 }

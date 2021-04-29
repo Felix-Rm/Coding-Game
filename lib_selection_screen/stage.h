@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "../lib_helpers/helpers.h"
 #include "../lib_level_screen/level_screen.h"
 #include "../lib_window/drawable.h"
 #include "../lib_window/style.h"

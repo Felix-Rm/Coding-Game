@@ -127,6 +127,8 @@ void Bot::update() {
             this->body.setRotation(current_rotation);
 
             level->top_bar->update();
+
+            just_done = true;
             state = IDLE;
         }
     }

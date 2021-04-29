@@ -26,6 +26,7 @@ Stage::Stage(Window *window, std::string load_path, std::string save_path, int s
 // Stage::Stage() : Drawable({0, 0}, {0, 0}){};
 Stage::~Stage() {
     window->removeEventHandler(contextMenu, &level_executor_info[num_buttons]);
+    system("killall mono");
     printf("stage %p deleted\n", this);
 };
 
@@ -189,7 +190,7 @@ bool Stage::contextMenu(sf::Event &event, void *data) {
         button_pos.y += context_button_size.y + padding;
 
         btn = obj->context->addButton(button_pos, context_button_size, "Add Level (right)", context_button_size.y * 0.6, 2, GameStyle::LIGHT_GRAY, GameStyle::GREEN);
-        btn->setEventHandler(sf::Mouse::Button::Middle, Window::createEventHandler(data, addLevelRight));
+        btn->setEventHandler(sf::Mouse::Button::Left, Window::createEventHandler(data, addLevelRight));
     }
 
     return true;
@@ -220,8 +221,6 @@ bool Stage::addLevel(sf::Event &event, void *data) {
     auto info = (std::pair<Stage *, int> *)data;
     auto obj = info->first;
 
-    obj->shiftLevels(info->second + 1, obj->num_buttons, 1);
-
     std::ofstream stage_info(obj->load_path + "stage.info");
     stage_info << obj->num_buttons + 1;
     stage_info.close();
@@ -232,22 +231,28 @@ bool Stage::addLevel(sf::Event &event, void *data) {
 }
 
 bool Stage::addLevelRight(sf::Event &event, void *data) {
+    auto info = (std::pair<Stage *, int> *)data;
+    auto obj = info->first;
+
+    obj->shiftLevels(info->second + 1, obj->num_buttons, 1);
     return addLevel(event, data);
 }
 
 bool Stage::addLevelLeft(sf::Event &event, void *data) {
-    auto info = *(std::pair<Stage *, int> *)data;
-    info.second--;
-    return addLevel(event, &info);
+    auto info = (std::pair<Stage *, int> *)data;
+    auto obj = info->first;
+
+    obj->shiftLevels(info->second, obj->num_buttons, 1);
+    return addLevel(event, data);
 }
 
 void Stage::shiftLevels(int start, int end, int by) {
     for (int i = start; i < end; i++) {
         if (std::filesystem::exists(load_path + std::to_string(i)))
-            std::filesystem::rename(load_path + std::to_string(i), load_path + std::to_string(i + by));
+            rename_directory(load_path + std::to_string(i), load_path + std::to_string(i + by));
 
         if (std::filesystem::exists(save_path + std::to_string(i)))
-            std::filesystem::rename(save_path + std::to_string(i), save_path + std::to_string(i + by));
+            rename_directory(save_path + std::to_string(i), save_path + std::to_string(i + by));
     }
 }
 

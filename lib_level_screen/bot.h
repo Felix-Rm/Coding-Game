@@ -42,6 +42,14 @@ class Bot : public Drawable {
 
     void update();
 
+    bool is_just_done() {
+        if (just_done) {
+            just_done = false;
+            return true;
+        }
+        return false;
+    }
+
     sf::Vector2u getTilePosition() const { return (sf::Vector2u)tile_position; };
     movement_state getState() const { return state; };
 
@@ -73,6 +81,8 @@ class Bot : public Drawable {
     float current_rotation = 0;
 
     LevelScreen *level;
+
+    bool just_done = false;
 
     void applyOffset();
 };

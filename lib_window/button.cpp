@@ -17,7 +17,6 @@ Button::Button(Window *window, sf::Vector2f pos, sf::Vector2f size) : Drawable(w
 
 Button::~Button() {
     unregisterEvents();
-    // throw std::runtime_error("could not delete event handler for button");
 }
 
 void Button::copyFrom(const Button &other) {

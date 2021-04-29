@@ -43,7 +43,10 @@ class Button : public Drawable {
 
     ~Button();
 
-    void setOutline(int thickness) { background.setOutlineThickness(thickness); }
+    void setOutline(int thickness) {
+        background.setOutlineThickness(thickness);
+    }
+
     void setBgColor(sf::Color c) {
         bg_color = c;
         background.setFillColor(c);
